@@ -1,0 +1,72 @@
+#!/bin/sh
+. /etc/update-motd.d/helper.sh
+
+printf "\n${LBLUE} HOST & WEB SERVICES ${NC}\n"
+
+# --- Hostname ---
+HOST=$(hostname)
+FQDN=$(hostname -f 2>/dev/null)
+if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
+    printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
+else
+    printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
+fi
+
+# --- Web Sites ---
+DOMAINS_FILE=$(mktemp)
+CLEAN_DOMAINS_FILE=$(mktemp)
+
+# 1. Apache: Look for ServerName
+if [ -d /etc/apache2/sites-enabled ]; then
+    awk '/ServerName/ {print $2}' /etc/apache2/sites-enabled/* 2>/dev/null >> "$DOMAINS_FILE"
+fi
+
+# 2. Nginx: Look for server_name
+if [ -d /etc/nginx/sites-enabled ]; then
+    grep -h "server_name" /etc/nginx/sites-enabled/* 2>/dev/null | sed 's/server_name//;s/;//g' | tr ' ' '\n' >> "$DOMAINS_FILE"
+fi
+
+# 3. Clean, Sort and Unique
+# Filter out empty lines, 'localhost', and nginx default '_'
+grep -vE "^$|localhost|_" "$DOMAINS_FILE" | sort | uniq > "$CLEAN_DOMAINS_FILE"
+
+# Check if we have active domains to list
+if [ -s "$CLEAN_DOMAINS_FILE" ]; then
+    printf "\n  %-30s | %-9s | %-9s\n" "Domain" "HTTP" "HTTPS"
+    printf "  %s\n" "-------------------------------------------------------------"
+
+    while read -r domain; do
+        # Clean whitespace
+        domain=$(echo "$domain" | xargs)
+        
+        # Check HTTP
+        if curl -s -I -m 0.5 -o /dev/null -H "Host: $domain" http://127.0.0.1; then
+            H1_COL=$GREEN
+            H1_TXT="OK"
+        else
+            H1_COL=$RED
+            H1_TXT="NO"
+        fi
+
+        # Check HTTPS
+        if curl -s -k -I -m 0.5 -o /dev/null -H "Host: $domain" https://127.0.0.1; then
+            H2_COL=$GREEN
+            H2_TXT="OK"
+        else
+            H2_COL=$RED
+            H2_TXT="NO"
+        fi
+
+        # Print row
+        # We put the color codes INSIDE the format string so they wrap the padded text.
+        # %-9s ensures the text "OK" (2 chars) takes up 9 spaces visually.
+        # The color codes are invisible and don't mess up alignment this way.
+        printf "  %-30s | ${H1_COL}%-9s${NC} | ${H2_COL}%-9s${NC}\n" "$domain" "$H1_TXT" "$H2_TXT"
+        
+    done < "$CLEAN_DOMAINS_FILE"
+else
+    printf "  %-20s ${LBLACK}(No active domains found)${NC}\n" "Active Sites:"
+fi
+
+# Cleanup
+rm -f "$DOMAINS_FILE" "$CLEAN_DOMAINS_FILE"

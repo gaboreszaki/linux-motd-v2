@@ -1,0 +1,24 @@
+#!/bin/sh
+. /etc/update-motd.d/helper.sh
+
+printf "\n${LBLUE} DISK USAGE ${NC}\n"
+printf "  %-15s %-10s %-10s %-8s %-s\n" "Mount" "Size" "Used" "Use%" "Status"
+
+# Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
+df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort | while read -r fs size used avail perc mount; do
+    PERC_VAL=$(echo "$perc" | tr -d '%')
+    
+    COLOR=$GREEN
+    STATUS="OK"
+    
+    if [ "$PERC_VAL" -ge 80 ]; then
+        COLOR=$YELLOW
+        STATUS="WARN"
+    fi
+    if [ "$PERC_VAL" -ge 90 ]; then
+        COLOR=$RED
+        STATUS="CRIT"
+    fi
+    
+    printf "  %-15s %-10s %-10s ${COLOR}%-8s${NC} ${COLOR}%-s${NC}\n" "$mount" "$size" "$used" "$perc" "$STATUS"
+done

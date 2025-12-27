@@ -1,0 +1,58 @@
+#!/bin/sh
+. /etc/update-motd.d/helper.sh
+
+printf "\n${LBLUE} USERS ${NC}\n"
+
+# 1. Active Users Count
+# We count lines from 'who'
+ACTIVE_COUNT=$(who | wc -l)
+printf "  %-20s ${LWHITE}%s${NC}\n" "Active Sessions:" "$ACTIVE_COUNT"
+
+
+# 2. Determine "Current" User
+# 'logname' returns the user of the controlling tty (the person logging in)
+# If that fails (no tty), fall back to the executing user (likely root)
+TARGET_USER=$(logname 2>/dev/null)
+[ -z "$TARGET_USER" ] && TARGET_USER=$(whoami)
+
+
+# 3. Get Previous Login Data
+# 'last -i' forces IP addresses.
+# We grab the last 2 lines for this user. 
+# Usually: Line 1 = Current Session (still logged in), Line 2 = Previous Session.
+RAW_DATA=$(last -i -n 2 "$TARGET_USER" | head -n 2 | tail -n 1)
+
+# Check if RAW_DATA is valid (not empty and not the wtmp footer)
+if [ -z "$RAW_DATA" ] || echo "$RAW_DATA" | grep -q "wtmp starts"; then
+    printf "  %-20s ${LBLACK}(First login or history cleared)${NC}\n" "Last Login:"
+else
+    # Parse Fields (User is $1, TTY is $2, IP is $3, Time is $4-$7)
+    L_IP=$(echo "$RAW_DATA" | awk '{print $3}')
+    L_DATE=$(echo "$RAW_DATA" | awk '{print $4, $5, $6, $7}')
+    
+    # 4. Location Logic
+    LOCATION=""
+    
+    # Check if IP is Local/Private/0.0.0.0
+    # Regex matches: 127.*, 10.*, 192.168.*, 172.16-31.*, 0.0.0.0
+    if echo "$L_IP" | grep -qE "^(127\.|10\.|192\.168\.|172\.(1[6-9]|2[0-9]|3[0-1])\.|0\.0\.0\.0)"; then
+        LOCATION="(Local Network)"
+        [ "$L_IP" = "0.0.0.0" ] && LOCATION="(Console)"
+    else
+        # It is a public IP, try to fetch location
+        # Timeout set to 1 second (-m 1) to prevent login delays
+        # API: ip-api.com returns plain text (City\nCountryCode)
+        GEO_DATA=$(curl -s -m 1 "http://ip-api.com/line/${L_IP}?fields=city,countryCode" 2>/dev/null)
+        
+        if [ -n "$GEO_DATA" ]; then
+            CITY=$(echo "$GEO_DATA" | sed -n '1p')
+            CNTRY=$(echo "$GEO_DATA" | sed -n '2p')
+            LOCATION="(${CITY}, ${CNTRY})"
+        fi
+    fi
+
+    # Display
+    printf "  %-20s %s\n" "User History:" "$TARGET_USER"
+    printf "  %-20s ${LCYAN}%s${NC} %s\n" "Previous IP:" "$L_IP" "$LOCATION"
+    printf "  %-20s %s\n" "Previous Date:" "$L_DATE"
+fi

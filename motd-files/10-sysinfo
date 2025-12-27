@@ -1,0 +1,37 @@
+#!/bin/sh
+. /etc/update-motd.d/helper.sh
+
+# Gather System Info
+KERNEL=$(uname -r)
+# Simple uptime formatting
+UPTIME=$(uptime -p | sed 's/up //')
+
+# Load Average
+LOAD=$(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
+LOAD1=$(echo "$LOAD" | awk '{print $1}')
+
+# Memory Usage
+MEM_TOTAL=$(free -m | awk '/Mem:/ {print $2}')
+MEM_USED=$(free -m | awk '/Mem:/ {print $3}')
+if [ "$MEM_TOTAL" -gt 0 ]; then
+    MEM_PERC=$(( 100 * MEM_USED / MEM_TOTAL ))
+else
+    MEM_PERC=0
+fi
+
+# Determine Load Color (Simple check assuming multi-core, adjust thresholds as needed)
+LOAD_COLOR=$GREEN
+awk -v l="$LOAD1" 'BEGIN {exit !(l > 2.0)}' && LOAD_COLOR=$YELLOW
+awk -v l="$LOAD1" 'BEGIN {exit !(l > 4.0)}' && LOAD_COLOR=$RED
+
+# Determine Memory Color
+MEM_COLOR=$GREEN
+[ "$MEM_PERC" -ge 75 ] && MEM_COLOR=$YELLOW
+[ "$MEM_PERC" -ge 90 ] && MEM_COLOR=$RED
+
+# Display
+printf "\n${LBLUE} SYSTEM STATUS ${NC}\n"
+printf "  %-20s %s\n" "Kernel:" "$KERNEL"
+printf "  %-20s %s\n" "Uptime:" "$UPTIME"
+printf "  %-20s ${LOAD_COLOR}%s${NC}\n" "Load Average:" "$LOAD"
+printf "  %-20s ${MEM_COLOR}%sMB / %sMB (%s%%)${NC}\n" "Memory:" "$MEM_USED" "$MEM_TOTAL" "$MEM_PERC"

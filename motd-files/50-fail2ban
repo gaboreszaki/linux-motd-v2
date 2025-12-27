@@ -1,0 +1,33 @@
+#!/bin/sh
+. /etc/update-motd.d/helper.sh
+
+# Check if fail2ban-client is installed
+if command -v fail2ban-client >/dev/null 2>&1; then
+    printf "\n${LBLUE} FAIL2BAN PROTECTION ${NC}\n"
+    
+    # Needs root privileges to communicate with the socket
+    if [ "$(id -u)" -eq 0 ]; then
+        # Get Jail List
+        JAIL_LIST=$(fail2ban-client status | grep "Jail list:" | sed 's/.*Jail list://g' | tr ',' ' ')
+        
+        TOTAL_BANS=0
+        JAIL_COUNT=0
+        
+        # Iterate over jails to sum up bans
+        for jail in $JAIL_LIST; do
+            COUNT=$(fail2ban-client status "$jail" | grep "Currently banned:" | awk '{print $4}')
+            TOTAL_BANS=$((TOTAL_BANS + COUNT))
+            JAIL_COUNT=$((JAIL_COUNT + 1))
+        done
+        
+        # Color logic for bans
+        COLOR=$GREEN
+        [ "$TOTAL_BANS" -gt 0 ] && COLOR=$YELLOW
+        [ "$TOTAL_BANS" -gt 10 ] && COLOR=$RED
+
+        printf "  %-20s %s\n" "Active Jails:" "$JAIL_COUNT"
+        printf "  %-20s ${COLOR}%s IPs${NC}\n" "Currently Banned:" "$TOTAL_BANS"
+    else
+        printf "  ${YELLOW}Insufficient permissions to read Fail2Ban status (needs root).${NC}\n"
+    fi
+fi
