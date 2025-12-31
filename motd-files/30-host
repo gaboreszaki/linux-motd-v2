@@ -3,14 +3,7 @@
 
 printf "\n${LBLUE} HOST & WEB SERVICES ${NC}\n"
 
-# --- Hostname ---
-HOST=$(hostname)
-FQDN=$(hostname -f 2>/dev/null)
-if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
-    printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
-else
-    printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
-fi
+
 
 # --- Web Sites ---
 DOMAINS_FILE=$(mktemp)
@@ -32,7 +25,7 @@ grep -vE "^$|localhost|_" "$DOMAINS_FILE" | sort | uniq > "$CLEAN_DOMAINS_FILE"
 
 # Check if we have active domains to list
 if [ -s "$CLEAN_DOMAINS_FILE" ]; then
-    printf "\n  %-30s | %-9s | %-9s\n" "Domain" "HTTP" "HTTPS"
+    printf "\n  %-30s | %-9s | %-9s\n" "Active Domains:" "HTTP" "HTTPS"
     printf "  %s\n" "-------------------------------------------------------------"
 
     while read -r domain; do
@@ -40,22 +33,24 @@ if [ -s "$CLEAN_DOMAINS_FILE" ]; then
         domain=$(echo "$domain" | xargs)
         
         # Check HTTP
-        if curl -s -I -m 0.5 -o /dev/null -H "Host: $domain" http://127.0.0.1; then
-            H1_COL=$GREEN
-            H1_TXT="OK"
-        else
-            H1_COL=$RED
-            H1_TXT="NO"
-        fi
+        H1_TXT=$(curl -s -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" http://127.0.0.1)
+
+        case "$H1_TXT" in
+            2*) H1_COL=$GREEN ;;
+            3*) H1_COL=$LYELLOW ;;
+            4*) H1_COL=$ORANGE ;;
+            *)  H1_COL=$RED ;;
+        esac
 
         # Check HTTPS
-        if curl -s -k -I -m 0.5 -o /dev/null -H "Host: $domain" https://127.0.0.1; then
-            H2_COL=$GREEN
-            H2_TXT="OK"
-        else
-            H2_COL=$RED
-            H2_TXT="NO"
-        fi
+        H2_TXT=$(curl -s -k -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" https://127.0.0.1)
+
+        case "$H2_TXT" in
+            2*) H2_COL=$GREEN ;;
+            3*) H2_COL=$LYELLOW ;;
+            4*) H2_COL=$ORANGE ;;
+            *)  H2_COL=$RED ;;
+        esac
 
         # Print row
         # We put the color codes INSIDE the format string so they wrap the padded text.
