@@ -1,6 +1,9 @@
 #!/bin/sh
 . /etc/update-motd.d/helper.sh
 
+
+
+
 # Gather System Info
 KERNEL=$(uname -r)
 # Simple uptime formatting
@@ -30,6 +33,15 @@ MEM_COLOR=$GREEN
 [ "$MEM_PERC" -ge 90 ] && MEM_COLOR=$RED
 
 # Display
+
+# --- Hostname ---
+HOST=$(hostname)
+FQDN=$(hostname -f 2>/dev/null)
+if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
+    printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
+else
+    printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
+fi
 printf "\n${LBLUE} SYSTEM STATUS ${NC}\n"
 printf "  %-20s %s\n" "Kernel:" "$KERNEL"
 printf "  %-20s %s\n" "Uptime:" "$UPTIME"

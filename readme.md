@@ -40,23 +40,40 @@ The MOTD is composed of several modular scripts located in `motd-files/`:
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/linux-motd-v2.git
+    git clone https://github.com/gaboreszaki/linux-motd-v2.git
     cd linux-motd-v2
     ```
+2.  Make the setup script executable:
+    ```bash
+    chmod +x setup.sh
+    chmod +x update.sh
+    chmod +x remove.sh
+    ``` 
 
-2.  Run the setup script with root privileges:
+3. Run the setup script with root privileges:
     ```bash
     sudo ./setup.sh
     ```
-
+### ONE LINE SETUP:
+This will clone the repository, make the setup, update, remove scripts executable, and run it with sudo privileges:
+```bash
+    git clone https://github.com/gaboreszaki/linux-motd-v2.git && cd linux-motd-v2 && chmod +x *.sh && sudo ./setup.sh
+```
 The setup script will:
 - Backup your existing MOTD files to `/etc/update-motd.d.bak/`.
 - Clear the current `/etc/update-motd.d/` directory.
 -  Install the new scripts and set executable permissions.
 
-> NOTE: To test immediately without logging out, run:
+#### To test immediately without logging out, run:
 ```bash
 sudo run-parts /etc/update-motd.d
+```
+#### (optional) Adding an alias to your `.bashrc` file:
+If you want to run the `motd` command manually without logging out,
+you can add it as an alias to your `.bashrc` file.
+
+```bash
+echo "alias motd='run-parts /etc/update-motd.d'" >> ~/.bashrc && source ~/.bashrc
 ```
 
 ## Updating
@@ -65,7 +82,7 @@ sudo run-parts /etc/update-motd.d
 
 1.  Navigate to the directory:
     ```bash
-    cd linux-motd-v2
+    cd  ~/linux-motd-v2
     ```
 2.  Run the update script:
     ```bash
@@ -76,7 +93,11 @@ This will `git pull` the latest changes and overwrite the installed files in `/e
 
 ## Uninstallation
 This will remove the installed scripts and restore the backup created during installation.
-
+1.  Navigate to the directory:
+    ```bash
+    cd  ~/linux-motd-v2
+    ```
+2.  Run the remove script:
 ```bash
   sudo ./remove.sh
 ```
