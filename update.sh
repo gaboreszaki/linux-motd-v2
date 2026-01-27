@@ -14,6 +14,7 @@ echo "Updating Linux MOTD..."
 
 # 1. Pull latest changes from git
 echo "Pulling latest changes from repository..."
+git reset --hard HEAD
 git pull
 
 # Load and run configuration
