@@ -37,7 +37,11 @@ fi
 # 3. Re-apply permissions
 echo "Setting permissions..."
 chmod +x "$MOTD_DIR"/*
-[ -f "$MOTD_DIR/logo.txt" ] && chmod -x "$MOTD_DIR/logo.txt"
+# Remove execute permission from non-script files if they exist
+[ -f "$MOTD_DIR/logo-default.txt" ] && chmod -x "$MOTD_DIR/logo-default.txt"
+[ -f "$MOTD_DIR/logo-custom.txt" ] && chmod -x "$MOTD_DIR/logo-custom.txt"
 
 echo "------------------------------------------------"
 echo "Update complete!"
+printf "\n"
+echo "To add or modify a custom logo file run 'nano /etc/update-motd.d/logo-custom.txt' and paste your logo."
