@@ -53,9 +53,8 @@ case "$ENABLE_SYSINFO" in
             HOST_VAR="$HOST"
         fi
 
-        printf "| %-30s | %-30s | %-30s | %-30s |\n" "Hostname" "Kernel" "Uptime" "Avg. Load"
-        printf "| ${LBLUE}%-30s${NC} | ${LGREEN}%-30s${NC} | ${LBLUE}%-30s${NC} | ${LOAD_COLOR}%-30s${NC} |\n" "$HOST_VAR" "$KERNEL" "$UPTIME" "$LOAD"
-        printf "| Memory Used: ${MEM_COLOR}%-30s${NC} | Memory Total: ${MEM_COLOR}%-30s${NC} | Memory Percent: ${MEM_COLOR}%-30s${NC}s |\n" "$MEM_USED" "$MEM_TOTAL" "$MEM_PERC"
+        printf "| %-30s | %-30s | %-30s | %-30s | %-30s |\n" "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (u/t/%)"
+        printf "| ${LBLUE}%-30s${NC} | ${LGREEN}%-30s${NC} | ${LBLUE}%-30s${NC} | ${LOAD_COLOR}%-30s${NC} | ${MEM_COLOR}%-30s${NC}| \n" "$HOST_VAR" "$KERNEL" "$UPTIME" "$LOAD" "$MEM_USED / $MEM_TOTAL / $MEM_PERC"
         ;;
 
 
