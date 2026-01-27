@@ -14,7 +14,14 @@ echo "Updating Linux MOTD..."
 
 # 1. Pull latest changes from git
 echo "Pulling latest changes from repository..."
+git reset --hard HEAD
 git pull
+
+#1b. Add execute permission to the script files:
+chmod +x setup.sh
+chmod +x update.sh
+chmod +x remove.sh
+chmod +x configure.sh
 
 # Load and run configuration
 if [ -f "./configure.sh" ]; then
@@ -37,7 +44,11 @@ fi
 # 3. Re-apply permissions
 echo "Setting permissions..."
 chmod +x "$MOTD_DIR"/*
-[ -f "$MOTD_DIR/logo.txt" ] && chmod -x "$MOTD_DIR/logo.txt"
+# Remove execute permission from non-script files if they exist
+[ -f "$MOTD_DIR/logo-default.txt" ] && chmod -x "$MOTD_DIR/logo-default.txt"
+[ -f "$MOTD_DIR/logo-custom.txt" ] && chmod -x "$MOTD_DIR/logo-custom.txt"
 
 echo "------------------------------------------------"
 echo "Update complete!"
+printf "\n"
+echo "To add or modify a custom logo file run 'nano /etc/update-motd.d/logo-custom.txt' and paste your logo."

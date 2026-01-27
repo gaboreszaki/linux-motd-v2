@@ -55,9 +55,11 @@ fi
 echo "Setting permissions..."
 chmod +x "$MOTD_DIR"/*
 # Remove execute permission from non-script files if they exist
-[ -f "$MOTD_DIR/logo.txt" ] && chmod -x "$MOTD_DIR/logo.txt"
+[ -f "$MOTD_DIR/logo-default.txt" ] && chmod -x "$MOTD_DIR/logo-default.txt"
+[ -f "$MOTD_DIR/logo-custom.txt" ] && chmod -x "$MOTD_DIR/logo-custom.txt"
 [ -f "$MOTD_DIR/helper.sh" ] && chmod +x "$MOTD_DIR/helper.sh" # Helper might be sourced or executed
 
 echo "------------------------------------------------"
 echo "Installation complete!"
+echo "To add a custom logo file run 'nano /etc/update-motd.d/logo-custom.txt' and paste your logo."
 echo "Try logging in to a new terminal session or run 'run-parts /etc/update-motd.d' to test."

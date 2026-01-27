@@ -1,6 +1,12 @@
 #!/bin/sh
 
-logo_file="/etc/update-motd.d/logo.txt"
+logo_file="/etc/update-motd.d/logo-default.txt"
+custom_logo_file="/etc/update-motd.d/logo-custom.txt"
+
+# Check for custom logo
+if [ -f "$custom_logo_file" ]; then
+    logo_file="$custom_logo_file"
+fi
 config_file="/etc/update-motd.d/motd.conf"
 
 # Load Configuration if exists
