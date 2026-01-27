@@ -4,7 +4,7 @@ A collection of modular shell scripts to generate a dynamic, informative, and co
 
 This project replaces the default static MOTD with real-time system dashboard.
 
-![Example](assets/example-screen.jpg)
+![Example](assets/example-screen.png)
 
 
 
@@ -28,6 +28,7 @@ The MOTD is composed of several modular scripts located in `motd-files/`:
     *   Lists available package updates (separating security updates).
     *   Checks for distribution release upgrades.
     *   Warns if a system reboot is required.
+* **etc (`99-end`)**: 
 
 ## Prerequisites
 
@@ -54,18 +55,22 @@ The MOTD is composed of several modular scripts located in `motd-files/`:
     ```bash
     sudo ./setup.sh
     ```
-### ONE LINE SETUP:
-This will clone the repository, make the setup, update, remove scripts executable, and run it with sudo privileges:
-```bash
-    git clone https://github.com/gaboreszaki/linux-motd-v2.git && cd linux-motd-v2 && chmod +x *.sh && sudo ./setup.sh
-```
-The setup script will:
-- Backup your existing MOTD files to `/etc/update-motd.d.bak/`.
-- Clear the current `/etc/update-motd.d/` directory.
--  Install the new scripts and set executable permissions.
+    The setup script will run an interactive configuration wizard allowing you to enable or disable specific modules.
 
-#### To test immediately without logging out, run:
-```bash
+    ### ONE LINE SETUP:
+    This will clone the repository, make the setup, update, remove scripts executable, and run it with sudo privileges:
+    ```bash
+        git clone https://github.com/gaboreszaki/linux-motd-v2.git && cd linux-motd-v2 && chmod +x *.sh && sudo ./setup.sh
+    ```
+    The setup script will:
+    - Backup your existing MOTD files to `/etc/update-motd.d.bak/`.
+    - Clear the current `/etc/update-motd.d/` directory.
+    - Ask you which modules you want to enable.
+    - Install the new scripts and configuration.
+    - Set executable permissions.
+
+    #### To test immediately without logging out, run:
+    ```bash
 sudo run-parts /etc/update-motd.d
 ```
 #### (optional) Adding an alias to your `.bashrc` file:
@@ -85,14 +90,14 @@ echo "alias motd='run-parts /etc/update-motd.d'" >> ~/.bashrc && source ~/.bashr
     cd  ~/linux-motd-v2
     ```
 2.  Run the update script:
-    ```bash
-    sudo ./update.sh
-    ```
+        ```bash
+        sudo ./update.sh
+        ```
 
-This will `git pull` the latest changes and overwrite the installed files in `/etc/update-motd.d/`.
+    This will `git pull` the latest changes and allow you to reconfigure the installed modules.
 
-## Uninstallation
-This will remove the installed scripts and restore the backup created during installation.
+    ## Uninstallation
+    This will remove the installed scripts and restore the backup created during installation.
 1.  Navigate to the directory:
     ```bash
     cd  ~/linux-motd-v2
@@ -103,10 +108,11 @@ This will remove the installed scripts and restore the backup created during ins
 ```
 
 ## Customization
+*   **Configuration**: The `setup.sh` and `update.sh` scripts provide an interactive way to enable/disable modules. This configuration is stored in `/etc/update-motd.d/motd.conf`.
 *   **Logo**: Edit `motd-files/logo.txt` to change the ASCII art.
 *   **Colors**: Edit `motd-files/helper.sh` to modify color variables.
-*   **Modules**: You can disable specific modules by removing the execute permission on the installed file:
+*   **Manual Module Disabling**: Alternatively, you can disable specific modules by setting the variable to "n" in `motd.conf` or by removing the execute permission on the installed file:
 
-```bash
-    sudo chmod -x /etc/update-motd.d/50-fail2ban
-```
+    ```bash
+        sudo chmod -x /etc/update-motd.d/50-fail2ban
+    ```
