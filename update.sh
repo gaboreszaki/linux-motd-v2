@@ -17,6 +17,12 @@ echo "Pulling latest changes from repository..."
 git reset --hard HEAD
 git pull
 
+#1b. Add execute permission to the script files:
+chmod +x setup.sh
+chmod +x update.sh
+chmod +x remove.sh
+chmod +x configure.sh
+
 # Load and run configuration
 if [ -f "./configure.sh" ]; then
     source ./configure.sh
