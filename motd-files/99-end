@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. /etc/update-motd.d/helper.sh
+
+print_empty_line
