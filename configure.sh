@@ -5,18 +5,20 @@ configure_motd() {
     local MOTD_DIR="$2"
     local MOTD_CONF="$SOURCE_DIR/motd.conf"
 
-    ask_yes_no() {
+    ask_option() {
         local prompt="$1"
         local config_var="$2"
         local default="$3"
 
         while true; do
-            read -p "$prompt (y/n) [$default]: " yn
-            case $yn in
+            read -p "$prompt (y/n/s/t) [$default]: " choice
+            case $choice in
                 [Yy]* ) echo "$config_var=\"y\"" >> "$MOTD_CONF"; break;;
                 [Nn]* ) echo "$config_var=\"n\"" >> "$MOTD_CONF"; break;;
+                [Ss]* ) echo "$config_var=\"short\"" >> "$MOTD_CONF"; break;;
+                [Tt]* ) echo "$config_var=\"table\"" >> "$MOTD_CONF"; break;;
                 "" ) echo "$config_var=\"$default\"" >> "$MOTD_CONF"; break;;
-                * ) echo "Please answer yes or no.";;
+                * ) echo "Please answer yes, no, short, or table.";;
             esac
         done
     }
@@ -45,13 +47,13 @@ configure_motd() {
         mkdir -p "$SOURCE_DIR"
         echo "# Linux MOTD Config" > "$MOTD_CONF"
 
-        ask_yes_no "Enable Header (Logo)?" "ENABLE_HEADER" "y"
-        ask_yes_no "Enable System Info?" "ENABLE_SYSINFO" "y"
-        ask_yes_no "Enable Disk Usage?" "ENABLE_DISK_USAGE" "y"
-        ask_yes_no "Enable Host & Web Services?" "ENABLE_HOST_SERVICES" "y"
-        ask_yes_no "Enable User Info?" "ENABLE_USERS" "y"
-        ask_yes_no "Enable Fail2Ban Protection?" "ENABLE_FAIL2BAN" "y"
-        ask_yes_no "Enable Updates & Maintenance?" "ENABLE_UPDATES" "y"
+        ask_option "Enable Header (Logo)?" "ENABLE_HEADER" "y"
+        ask_option "Enable System Info?" "ENABLE_SYSINFO" "y"
+        ask_option "Enable Disk Usage?" "ENABLE_DISK_USAGE" "y"
+        ask_option "Enable Host & Web Services?" "ENABLE_HOST_SERVICES" "y"
+        ask_option "Enable User Info?" "ENABLE_USERS" "y"
+        ask_option "Enable Fail2Ban Protection?" "ENABLE_FAIL2BAN" "y"
+        ask_option "Enable Updates & Maintenance?" "ENABLE_UPDATES" "y"
 
         echo "Configuration saved."
     else

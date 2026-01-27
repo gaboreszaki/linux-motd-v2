@@ -27,9 +27,16 @@ if command -v fail2ban-client >/dev/null 2>&1; then
         [ "$TOTAL_BANS" -gt 0 ] && COLOR=$YELLOW
         [ "$TOTAL_BANS" -gt 10 ] && COLOR=$RED
 
-        printf "  %-20s %s\n" "Active Jails:" "$JAIL_COUNT"
-        printf "  %-20s ${COLOR}%s IPs${NC}\n" "Currently Banned:" "$TOTAL_BANS"
-    else
-        printf "  ${YELLOW}Insufficient permissions to read Fail2Ban status (needs root).${NC}\n"
-    fi
+    case "$ENABLE_FAIL2BAN" in
+        "short" | "s")
+             printf "  ${LBLUE}F2B:${NC} ${LWHITE}%s${NC} jails, ${COLOR}%s${NC} bans\n" "$JAIL_COUNT" "$TOTAL_BANS"
+            ;;
+        *)
+            printf "\n${LBLUE} FAIL2BAN PROTECTION ${NC}\n"
+            printf "  %-20s %s\n" "Active Jails:" "$JAIL_COUNT"
+            printf "  %-20s ${COLOR}%s IPs${NC}\n" "Currently Banned:" "$TOTAL_BANS"
+            ;;
+    esac
+else
+    printf "  ${YELLOW}Insufficient permissions to read Fail2Ban status (needs root).${NC}\n"
 fi

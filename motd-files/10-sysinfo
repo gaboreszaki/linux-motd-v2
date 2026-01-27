@@ -39,13 +39,35 @@ MEM_COLOR=$GREEN
 # --- Hostname ---
 HOST=$(hostname)
 FQDN=$(hostname -f 2>/dev/null)
-if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
-    printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
-else
-    printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
-fi
-printf "\n${LBLUE} SYSTEM STATUS ${NC}\n"
-printf "  %-20s %s\n" "Kernel:" "$KERNEL"
-printf "  %-20s %s\n" "Uptime:" "$UPTIME"
-printf "  %-20s ${LOAD_COLOR}%s${NC}\n" "Load Average:" "$LOAD"
-printf "  %-20s ${MEM_COLOR}%sMB / %sMB (%s%%)${NC}\n" "Memory:" "$MEM_USED" "$MEM_TOTAL" "$MEM_PERC"
+
+case "$ENABLE_SYSINFO" in
+    "short" | "s")
+        # Short View
+        printf "  ${LBLUE}Sys:${NC} ${LWHITE}%s${NC} | ${LBLUE}Kernel:${NC} %s | ${LBLUE}Up:${NC} %s | ${LBLUE}Load:${NC} ${LOAD_COLOR}%s${NC} | ${LBLUE}Mem:${NC} ${MEM_COLOR}%s%%${NC}\n" "$HOST" "$KERNEL" "$UPTIME" "$LOAD1" "$MEM_PERC"
+        ;;
+    "table" | "t")
+        # Table View (No Header)
+        if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
+            printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
+        else
+            printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
+        fi
+        printf "  %-20s %s\n" "Kernel:" "$KERNEL"
+        printf "  %-20s %s\n" "Uptime:" "$UPTIME"
+        printf "  %-20s ${LOAD_COLOR}%s${NC}\n" "Load Average:" "$LOAD"
+        printf "  %-20s ${MEM_COLOR}%sMB / %sMB (%s%%)${NC}\n" "Memory:" "$MEM_USED" "$MEM_TOTAL" "$MEM_PERC"
+        ;;
+    *)
+        # Normal View
+        if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
+            printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
+        else
+            printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
+        fi
+        printf "\n${LBLUE} SYSTEM STATUS ${NC}\n"
+        printf "  %-20s %s\n" "Kernel:" "$KERNEL"
+        printf "  %-20s %s\n" "Uptime:" "$UPTIME"
+        printf "  %-20s ${LOAD_COLOR}%s${NC}\n" "Load Average:" "$LOAD"
+        printf "  %-20s ${MEM_COLOR}%sMB / %sMB (%s%%)${NC}\n" "Memory:" "$MEM_USED" "$MEM_TOTAL" "$MEM_PERC"
+        ;;
+esac
