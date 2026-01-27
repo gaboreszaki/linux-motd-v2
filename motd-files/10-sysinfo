@@ -39,6 +39,11 @@ MEM_COLOR=$GREEN
 # --- Hostname ---
 HOST=$(hostname)
 FQDN=$(hostname -f 2>/dev/null)
+if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
+    HOST_NAME="$HOST $FQDN"
+else
+    HOST_NAME="$HOST"
+fi
 
 case "$ENABLE_SYSINFO" in
     "short" | "s")
@@ -46,26 +51,15 @@ case "$ENABLE_SYSINFO" in
         printf "  ${LBLUE}Sys:${NC} ${LWHITE}%s${NC} | ${LBLUE}Kernel:${NC} %s | ${LBLUE}Up:${NC} %s | ${LBLUE}Load:${NC} ${LOAD_COLOR}%s${NC} | ${LBLUE}Mem:${NC} ${MEM_COLOR}%s%%${NC}\n" "$HOST" "$KERNEL" "$UPTIME" "$LOAD1" "$MEM_PERC"
         ;;
     "table" | "t")
-#        # Table View (No Header)
-        if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
-            HOST_VAR="$HOST $FQDN"
-        else
-            HOST_VAR="$HOST"
-        fi
-
-        printf "| %-30s | %-30s | %-30s | %-30s | %-30s |\n" "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (u/t/%)"
-        printf "| ${LBLUE}%-30s${NC} | ${LGREEN}%-30s${NC} | ${LBLUE}%-30s${NC} | ${LOAD_COLOR}%-30s${NC} | ${MEM_COLOR}%-30s${NC} | \n" "$HOST_VAR" "$KERNEL" "$UPTIME" "$LOAD" "$MEM_USED MB / $MEM_TOTAL MB / $MEM_PERC %"
+#        # Table View
+        printf "| %-30s | %-30s | %-30s | %-30s | %-30s |\n" "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (used/total/percent)"
+        printf "| ${LBLUE}%-30s${NC} | ${LGREEN}%-30s${NC} | ${LBLUE}%-30s${NC} | ${LOAD_COLOR}%-30s${NC} | ${MEM_COLOR}%-30s${NC} | \n" "$HOST_NAME" "$KERNEL" "$UPTIME" "$LOAD" "$MEM_USED MB / $MEM_TOTAL MB / $MEM_PERC %"
         ;;
-
 
     *)
         # Normal View
-        if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
-            printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
-        else
-            printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
-        fi
         printf "\n${LBLUE} SYSTEM STATUS ${NC}\n"
+        printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST_NAME"
         printf "  %-20s %s\n" "Kernel:" "$KERNEL"
         printf "  %-20s %s\n" "Uptime:" "$UPTIME"
         printf "  %-20s ${LOAD_COLOR}%s${NC}\n" "Load Average:" "$LOAD"
