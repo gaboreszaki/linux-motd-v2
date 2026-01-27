@@ -53,8 +53,10 @@ case "$ENABLE_SYSINFO" in
             HOST_VAR="$HOST"
         fi
 
-          printf '|%-20s|\n' "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (used/total/percentage)"
-          printf '|%-20s|\n' "$HOST_VAR" "$KERNEL" "$UPTIME" "${LOAD_COLOR}$LOAD${NC}" "${MEM_COLOR}$MEM_USED/$MEM_TOTAL/$MEM_PERC${NC}";;
+        TABLE_FORMAT="| %-20s | %-20s | %-20s | %-20s | %-30s |\n"
+        printf $TABLE_FORMAT "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (used/total/percentage)"
+        printf $TABLE_FORMAT "$HOST_VAR" "$KERNEL" "$UPTIME" "${LOAD_COLOR}$LOAD${NC}" "${MEM_COLOR}$MEM_USED/$MEM_TOTAL/$MEM_PERC${NC}"
+        ;;
 
 
     *)
