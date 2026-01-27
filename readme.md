@@ -4,6 +4,9 @@ A collection of modular shell scripts to generate a dynamic, informative, and co
 
 This project replaces the default static MOTD with a real-time system dashboard.
 
+## Default login screen:
+![Example](assets/default-screen.png)
+## Customized login screen:
 ![Example](assets/example-screen.png)
 
 
@@ -109,7 +112,7 @@ To update the scripts to the latest version from the repository:
 
 ## Customization
 *   **Configuration**: The `setup.sh` and `update.sh` scripts provide an interactive way to enable/disable modules. This configuration is stored in `/etc/update-motd.d/motd.conf`.
-*   **Logo**: Edit `motd-files/logo.txt` to change the ASCII art.
+*   **Logo**: To add/modify a custom logo run `nano /etc/update-motd.d/logo-custom.txt` and paste your ASCII Art logo.
 *   **Colors**: Edit `motd-files/helper.sh` to modify color variables.
 *   **Edit the config files**: You can disable specific modules by setting the variable to "n" in `/etc/update-motd.d/motd.conf` 
 *   **Manual Module Disabling**:removing the 'execute' permission on the installed file: `sudo chmod -x /etc/update-motd.d/50-fail2ban`
