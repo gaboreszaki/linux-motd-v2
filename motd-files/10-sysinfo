@@ -46,17 +46,17 @@ case "$ENABLE_SYSINFO" in
         printf "  ${LBLUE}Sys:${NC} ${LWHITE}%s${NC} | ${LBLUE}Kernel:${NC} %s | ${LBLUE}Up:${NC} %s | ${LBLUE}Load:${NC} ${LOAD_COLOR}%s${NC} | ${LBLUE}Mem:${NC} ${MEM_COLOR}%s%%${NC}\n" "$HOST" "$KERNEL" "$UPTIME" "$LOAD1" "$MEM_PERC"
         ;;
     "table" | "t")
-        # Table View (No Header)
+#        # Table View (No Header)
         if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
-            printf "  %-20s ${LWHITE}%s${NC} (%s)\n" "Hostname:" "$HOST" "$FQDN"
+            HOST_VAR="$HOST $FQDN"
         else
-            printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST"
+            HOST_VAR="$HOST"
         fi
-        printf "  %-20s %s\n" "Kernel:" "$KERNEL"
-        printf "  %-20s %s\n" "Uptime:" "$UPTIME"
-        printf "  %-20s ${LOAD_COLOR}%s${NC}\n" "Load Average:" "$LOAD"
-        printf "  %-20s ${MEM_COLOR}%sMB / %sMB (%s%%)${NC}\n" "Memory:" "$MEM_USED" "$MEM_TOTAL" "$MEM_PERC"
-        ;;
+
+          printf '|%-20s|\n' "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (used/total/percentage)"
+          printf '|%-20s|\n' "$HOST_VAR" "$KERNEL" "$UPTIME" "${LOAD_COLOR}$LOAD${NC}" "${MEM_COLOR}$MEM_USED/$MEM_TOTAL/$MEM_PERC${NC}";;
+
+
     *)
         # Normal View
         if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
