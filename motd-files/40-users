@@ -1,6 +1,8 @@
 #!/bin/sh
 . /etc/update-motd.d/helper.sh
 
+if [ "$ENABLE_USERS" = "n" ]; then exit 0; fi
+
 printf "\n${LBLUE} USERS ${NC}\n"
 
 # 1. Active Users Count

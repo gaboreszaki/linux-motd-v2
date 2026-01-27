@@ -4,7 +4,7 @@ A collection of modular shell scripts to generate a dynamic, informative, and co
 
 This project replaces the default static MOTD with real-time system dashboard.
 
-![Example](assets/example-screen)
+![Example](assets/example-screen.jpg)
 
 
 
