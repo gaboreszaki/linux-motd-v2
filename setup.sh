@@ -11,6 +11,17 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# --- Interactive Configuration ---
+# Load configuration function
+if [ -f "./configure.sh" ]; then
+    source ./configure.sh
+else
+    echo "Error: configure.sh not found."
+    exit 1
+fi
+
+configure_motd "$SOURCE_DIR" "$MOTD_DIR"
+
 echo "Starting installation..."
 
 # 1. Create Backup of existing files

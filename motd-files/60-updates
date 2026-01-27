@@ -1,6 +1,8 @@
 #!/bin/sh
 . /etc/update-motd.d/helper.sh
 
+if [ "$ENABLE_UPDATES" = "n" ]; then exit 0; fi
+
 printf "\n${LBLUE} UPDATES & MAINTENANCE ${NC}\n"
 
 # --- Package Updates ---

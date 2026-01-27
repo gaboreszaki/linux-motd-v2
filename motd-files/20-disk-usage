@@ -1,6 +1,8 @@
 #!/bin/sh
 . /etc/update-motd.d/helper.sh
 
+if [ "$ENABLE_DISK_USAGE" = "n" ]; then exit 0; fi
+
 printf "\n${LBLUE} DISK USAGE ${NC}\n"
 printf "  %-15s %-10s %-10s %-8s %-s\n" "Mount" "Size" "Used" "Use%" "Status"
 

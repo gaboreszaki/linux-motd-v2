@@ -2,4 +2,7 @@
 
 . /etc/update-motd.d/helper.sh
 
+if [ "$ENABLE_HEADER" = "n" ]; then exit 0; fi
+
 print_colored_logo "LCYAN"
+print_empty_line

@@ -1,6 +1,8 @@
 #!/bin/sh
 . /etc/update-motd.d/helper.sh
 
+if [ "$ENABLE_FAIL2BAN" = "n" ]; then exit 0; fi
+
 # Check if fail2ban-client is installed
 if command -v fail2ban-client >/dev/null 2>&1; then
     printf "\n${LBLUE} FAIL2BAN PROTECTION ${NC}\n"

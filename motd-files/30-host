@@ -1,6 +1,8 @@
 #!/bin/sh
 . /etc/update-motd.d/helper.sh
 
+if [ "$ENABLE_HOST_SERVICES" = "n" ]; then exit 0; fi
+
 printf "\n${LBLUE} HOST & WEB SERVICES ${NC}\n"
 
 
@@ -33,7 +35,7 @@ if [ -s "$CLEAN_DOMAINS_FILE" ]; then
         domain=$(echo "$domain" | xargs)
         
         # Check HTTP
-        H1_TXT=$(curl -s -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" http://127.0.0.1)
+        H1_TXT=$(curl -s -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" "http://$domain")
 
         case "$H1_TXT" in
             2*) H1_COL=$GREEN ;;
@@ -43,7 +45,7 @@ if [ -s "$CLEAN_DOMAINS_FILE" ]; then
         esac
 
         # Check HTTPS
-        H2_TXT=$(curl -s -k -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" https://127.0.0.1)
+        H2_TXT=$(curl -s -k -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" "https://$domain")
 
         case "$H2_TXT" in
             2*) H2_COL=$GREEN ;;

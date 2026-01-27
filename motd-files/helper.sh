@@ -1,6 +1,12 @@
 #!/bin/sh
 
 logo_file="/etc/update-motd.d/logo.txt"
+config_file="/etc/update-motd.d/motd.conf"
+
+# Load Configuration if exists
+if [ -f "$config_file" ]; then
+    . "$config_file"
+fi
 
 # Color codes
 NC='\033[0m' # No Color
@@ -68,4 +74,8 @@ print_colored_logo() {
     done < "$logo_file"
   fi
 
+}
+
+print_empty_line(){
+  printf "\n"
 }

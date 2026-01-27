@@ -1,6 +1,8 @@
 #!/bin/sh
 . /etc/update-motd.d/helper.sh
 
+if [ "$ENABLE_SYSINFO" = "n" ]; then exit 0; fi
+
 
 
 
