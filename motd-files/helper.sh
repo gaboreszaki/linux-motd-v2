@@ -77,5 +77,5 @@ print_colored_logo() {
 }
 
 print_empty_line(){
-  printf "\n\n"
+  printf "\n"
 }

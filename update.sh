@@ -16,6 +16,14 @@ echo "Updating Linux MOTD..."
 echo "Pulling latest changes from repository..."
 git pull
 
+# Load and run configuration
+if [ -f "./configure.sh" ]; then
+    source ./configure.sh
+    configure_motd "$SOURCE_DIR" "$MOTD_DIR"
+else
+    echo "Warning: configure.sh not found. Skipping configuration."
+fi
+
 # 2. Update files
 if [ -d "$SOURCE_DIR" ]; then
     echo "Updating installed files in $MOTD_DIR..."
