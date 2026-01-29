@@ -18,7 +18,7 @@ case "$ENABLE_DISK_USAGE" in
         ;;
     *)
         printf "\n${LBLUE} DISK USAGE ${NC}\n"
-        printf "  %-15s %-10s %-10s %-8s %-s\n" "Mount" "Size" "Used" "Use%" "Status"
+        printf " | %-15s %-10s %-10s %-8s %-s |\n" "Mount" "Size" "Used" "Use%" "Status"
 
         # Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
         df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort | while read -r fs size used avail perc mount; do
@@ -36,7 +36,7 @@ case "$ENABLE_DISK_USAGE" in
                 STATUS="CRIT"
             fi
         
-            printf "  %-15s %-10s %-10s ${COLOR}%-8s${NC} ${COLOR}%-s${NC}\n" "$mount" "$size" "$used" "$perc" "$STATUS"
+            printf " | %-15s %-10s %-10s ${COLOR}%-8s${NC} ${COLOR}%-s${NC} |\n" "$mount" "$size" "$used" "$perc" "$STATUS"
         done
         ;;
 esac

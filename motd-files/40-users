@@ -57,20 +57,20 @@ case "$ENABLE_USERS" in
         ;;
     "table" | "t")
         printf "\n${LBLUE} User info: ${NC}\n"
-        printf "| %-15s | %-15s | %-20s |\n" "Active" "Last User" "Last IP"
-        printf "| %-15s | %-15s | ${LCYAN}%-20s${NC} |\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP"
+        printf " | %-15s | %-15s | %-20s |\n" "Active" "Last User" "Last IP"
+        printf " | %-15s | %-15s | ${LCYAN}%-20s${NC} |\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP"
         ;;
     *)
 
         printr "\n${LBLUE} User info: ${NC}\n"
-        printf "| %-20s ${LWHITE}%s${NC} |\n" "Active Sessions:" "$ACTIVE_COUNT"
+        printf " | %-20s ${LWHITE}%s${NC} |\n" "Active Sessions:" "$ACTIVE_COUNT"
         # Check if RAW_DATA is valid (not empty and not the wtmp footer)
         if [ -z "$RAW_DATA" ] || echo "$RAW_DATA" | grep -q "wtmp starts"; then
-            printf "| %-20s ${LBLACK}(First login or history cleared)${NC} |\n" "Last Login:"
+            printf " | %-20s ${LBLACK}(First login or history cleared)${NC} |\n" "Last Login:"
         else
-            printf "| %-20s %s |\n" "User History:" "$TARGET_USER"
-            printf "| %-20s ${LCYAN}%s${NC} %s |\n" "Previous IP:" "$L_IP" "$LOCATION"
-            printf "| %-20s %s |\n" "Previous Date:" "$L_DATE"
+            printf " | %-20s %s |\n" "User History:" "$TARGET_USER"
+            printf " | %-20s ${LCYAN}%s${NC} %s |\n" "Previous IP:" "$L_IP" "$LOCATION"
+            printf " | %-20s %s |\n" "Previous Date:" "$L_DATE"
         fi
         ;;
 esac
