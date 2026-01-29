@@ -57,8 +57,8 @@ case "$ENABLE_USERS" in
         ;;
     "table" | "t")
         printf "\n${LBLUE} User info: ${NC}\n"
-        printf " ${BG_BLUE}| %-15s | %-15s | %-15s | %-20s |${NC}\n" "Active" "Last User" "Last IP" "Location"
-        printf " | %-15s | %-15s | ${LGREEN}%-15s${NC} | ${LCYAN}%-20s${NC} |\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP" "$LOCATION"
+        printf " ${BG_BLUE}| %-15s | %-15s | %15s | %30s |${NC}\n" "Active" "Last User" "Last IP" "Location"
+        printf " | %-15s | %-15s | ${LGREEN}%15s${NC} | ${LCYAN}%30s${NC} |\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP" "$LOCATION"
         ;;
     *)
 
