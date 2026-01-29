@@ -42,8 +42,8 @@ validate_root_privileges(){
 }
 
 display_notes(){
-  echo -e "${CYAN}Note:${NC} To add a custom logo file run ${LBLACK}'nano /etc/update-motd.d/logo-custom.txt'${NC} and paste your logo."
-  echo -e "${CYAN}Note:${NC} Try logging in to a new terminal session or run ${LBLACK}'run-parts /etc/update-motd.d'${NC} to test.\n"
+  echo -e "${CYAN}Note:${NC} To add a custom logo file run ${YELLOW}'nano /etc/update-motd.d/logo-custom.txt'${NC} and paste your logo."
+  echo -e "${CYAN}Note:${NC} Try logging in to a new terminal session or run ${YELLOW}'run-parts /etc/update-motd.d'${NC} to test."
 }
 
 draw_line(){
