@@ -3,20 +3,15 @@
 
 if [ "$ENABLE_USERS" = "n" ]; then exit 0; fi
 
-printf "\n${LBLUE} USERS ${NC}\n"
-
 # 1. Active Users Count
 # We count lines from 'who'
 ACTIVE_COUNT=$(who | wc -l)
-printf "  %-20s ${LWHITE}%s${NC}\n" "Active Sessions:" "$ACTIVE_COUNT"
-
 
 # 2. Determine "Current" User
 # 'logname' returns the user of the controlling tty (the person logging in)
 # If that fails (no tty), fall back to the executing user (likely root)
 TARGET_USER=$(logname 2>/dev/null)
 [ -z "$TARGET_USER" ] && TARGET_USER=$(whoami)
-
 
 # 3. Get Previous Login Data
 # 'last -i' forces IP addresses.
@@ -65,6 +60,7 @@ case "$ENABLE_USERS" in
         printf "  %-15s | %-15s | ${LCYAN}%-20s${NC}\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP"
         ;;
     *)
+
         printf "\n${LBLUE} USERS ${NC}\n"
         printf "  %-20s ${LWHITE}%s${NC}\n" "Active Sessions:" "$ACTIVE_COUNT"
         # Check if RAW_DATA is valid (not empty and not the wtmp footer)
