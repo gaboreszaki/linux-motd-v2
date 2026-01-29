@@ -4,12 +4,6 @@ configure_motd() {
     local SOURCE_DIR="$1"
     local MOTD_DIR="$2"
     local MOTD_CONF="$SOURCE_DIR/motd.conf"
-    
-    # Ensure colors are loaded if variables are empty
-    if [ -z "${RED}" ] && [ -f "./text-colors.sh" ]; then
-        # shellcheck source=./text-colors.sh
-        . "./text-colors.sh"
-    fi
 
     ask_option() {
         local prompt="$1"
@@ -18,7 +12,7 @@ configure_motd() {
 
         # Prepare colored prompt
         local prompt_text
-        prompt_text=$(echo -e "${LCYAN}$prompt ${LBLUE}(y/n/s/t) [${WHITE}$default${LBLUE}]: ${NC}")
+        prompt_text=$(echo -e "${CYAN}$prompt${NC} ${LBLACK}(y/n/s/t)${NC} [${WHITE}$default${NC}]:")
 
         while true; do
             read -p "$prompt_text" choice
@@ -33,9 +27,9 @@ configure_motd() {
         done
     }
 
-    echo -e "${BLUE}------------------------------------------------${NC}"
-    echo -e "${BLUE}Interactive Configuration${NC}"
-    echo -e "${BLUE}------------------------------------------------${NC}"
+    draw_line
+    echo -e "${LCYAN}Interactive Configuration${NC}"
+    draw_line
 
     # Try to import config from current installation if local is missing
     if [ ! -f "$MOTD_CONF" ] && [ -f "$MOTD_DIR/motd.conf" ]; then
@@ -69,7 +63,7 @@ configure_motd() {
 
         echo -e "${GREEN}Configuration saved.${NC}"
     else
-        echo -e "${LCYAN}Skipping configuration steps. Using existing motd.conf.${NC}"
+        echo -e "${CYAN}Skipping configuration steps. Using existing motd.conf.${NC}"
     fi
-    echo -e "${BLUE}------------------------------------------------${NC}"
+    echo -e "${LCYAN}------------------------------------------------${NC}"
 }

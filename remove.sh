@@ -3,20 +3,16 @@
 # Configuration
 MOTD_DIR="/etc/update-motd.d"
 BACKUP_DIR="/etc/update-motd.d.bak"
-TEXT_COLORS="./text-colors.sh"
 
-if [ -f "$TEXT_COLORS" ]; then
-    # shellcheck source=./text-colors.sh
-    . "$TEXT_COLORS"
-fi
+# Load Common Scripts
+. common.sh
 
-# Check for root privileges
-if [ "$EUID" -ne 0 ]; then
-  echo -e "${RED}Error: Please run as root (sudo ./remove.sh)${NC}"
-  exit 1
-fi
+draw_line
+echo -e "${LCYAN}Uninstalling Linux MOTD...${NC}"
+draw_line
 
-echo -e "${BLUE}Uninstalling Linux MOTD...${NC}"
+valvalidate_root_privileges
+get_config_script
 
 # 1. Remove current files
 echo -e "${LGREEN}Removing installed files from $MOTD_DIR...${NC}"
@@ -35,10 +31,10 @@ if [ -d "$BACKUP_DIR" ]; then
     
     # Optional: Remove backup directory after restore?
     # rm -rf "$BACKUP_DIR"
-    echo -e "${LCYAN}Note:${NC} Backup folder $BACKUP_DIR was kept."
+    echo -e "${CYAN}Note:${NC} Backup folder $BACKUP_DIR was kept."
 else
     echo -e "${RED}Warning: No backup directory found at $BACKUP_DIR. Directory $MOTD_DIR is now empty.${NC}"
 fi
 
-echo -e "${BLUE}------------------------------------------------${NC}"
-echo -e "${GREEN}Uninstallation complete.${NC}"
+draw_line
+echo -e "${GREEN}Uninstallation complete.${NC}\n"
