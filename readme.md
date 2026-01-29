@@ -7,7 +7,11 @@ This project replaces the default static MOTD with a real-time system dashboard.
 ## Default login screen:
 ![Example](assets/default-screen.png)
 ## Customized login screen:
-![Example](assets/example-screen.png)
+### Short version:
+![Example](assets/short-screen.png)
+
+### Table version:
+![Example](assets/table-screen.png)
 
 
 
