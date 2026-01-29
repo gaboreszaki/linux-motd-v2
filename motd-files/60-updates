@@ -21,12 +21,14 @@ if [ -f "$REL_FILE" ]; then
     fi
 fi
 
-
-REBOOT_STATUS="${LGEEN}NO${NC}"
 # --- Reboot Status ---
+REBOOT_STATUS="NO"
+REBOOT_COLOR=$GREEN
 if [ -f /var/run/reboot-required ]; then
-   REBOOT_STATUS="${RED}YES${NC}"
+     REBOOT_STATUS="YES"
+  REBOOT_COLOR=$RED
 fi
+
 
 if [ -f "$UPDATES_FILE" ]; then
     # Extract counts using awk.
@@ -54,7 +56,7 @@ if [ -f "$UPDATES_FILE" ]; then
 
     case "$ENABLE_UPDATES" in
         "short" | "s")
-             printf "  ${LBLUE}Updates:${NC} ${TOTAL_COLOR}%s${NC} (Sec: ${SEC_COLOR}%s${NC}). ${LBLUE}Reboot:${NC} %s ${LBLUE}Distro updates:${NC} %s \n" "$TOTAL" "$SEC" "$REBOOT_STATUS" "$DISTRO_UPDATE_MSG"
+             printf "  ${LBLUE}Updates:${NC} ${TOTAL_COLOR}%s${NC} (Sec: ${SEC_COLOR}%s${NC}). ${LBLUE}Reboot:${NC} ${REBOOT_COLOR}%s${NC} ${LBLUE}Distro updates:${NC} %s \n" "$TOTAL" "$SEC" "$REBOOT_STATUS" "$DISTRO_UPDATE_MSG"
              ;;
         "table" | "t")
              printf "| %-10s | %-10s | %-10s | %-10s |\n" "Packages" "Sec" "Reboot" "Distro Update"

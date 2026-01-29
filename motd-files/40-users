@@ -53,7 +53,7 @@ fi
 case "$ENABLE_USERS" in
     "short" | "s")
         if [ -n "$LOCATION" ]; then LOC_STR="$LOCATION"; else LOC_STR=""; fi
-        printf "  ${LBLUE}User:${NC} ${LWHITE}%s${NC} active. ${LBLUE}Last:${NC} %s from ${LCYAN}%s${NC} %s\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP" "$LOC_STR"
+        printf "  ${LBLUE}Users:${NC} ${LWHITE}%s${NC} active. ${LBLUE}Last:${NC} %s from ${LCYAN}%s${NC} %s\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP" "$LOC_STR"
         ;;
     "table" | "t")
         printf "\n${LBLUE} User info: ${NC}\n"
