@@ -41,7 +41,7 @@ if [ -s "$CLEAN_DOMAINS_FILE" ]; then
             ;;
         *)
             printf "\n${LBLUE} Websites: ${NC}\n"
-            printf " | %-30s | %-5s | %-5s |\n" "Active Domains:" "HTTP" "HTTPS"
+            printf " ${BG_BLUE}| %-30s | %-5s | %-5s |${NC}\n" "Active Domains:" "HTTP" "HTTPS"
 
             while read -r domain; do
                 # Clean whitespace
