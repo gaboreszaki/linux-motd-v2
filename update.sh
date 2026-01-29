@@ -5,7 +5,7 @@ MOTD_DIR="/etc/update-motd.d"
 SOURCE_DIR="./motd-files"
 
 # Load Common Scripts
-. ./common.sh
+source ./common.sh
 draw_line
 echo -e "${LCYAN}Updating Linux MOTD...${NC}"
 draw_line
