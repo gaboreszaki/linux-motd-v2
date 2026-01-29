@@ -12,7 +12,7 @@ draw_line
 echo -e "${LCYAN}Starting Installation${NC}"
 draw_line
 
-valvalidate_root_privileges
+validate_root_privileges
 get_config_script
 
 

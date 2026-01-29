@@ -11,7 +11,7 @@ draw_line
 echo -e "${LCYAN}Uninstalling Linux MOTD...${NC}"
 draw_line
 
-valvalidate_root_privileges
+validate_root_privileges
 get_config_script
 
 # 1. Remove current files
