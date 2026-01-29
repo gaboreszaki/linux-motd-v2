@@ -62,7 +62,7 @@ case "$ENABLE_USERS" in
         ;;
     *)
 
-        printr "\n${LBLUE} User info: ${NC}\n"
+        printf "\n${LBLUE} User info: ${NC}\n"
         printf " | %-20s ${LWHITE}%s${NC} |\n" "Active Sessions:" "$ACTIVE_COUNT"
         # Check if RAW_DATA is valid (not empty and not the wtmp footer)
         if [ -z "$RAW_DATA" ] || echo "$RAW_DATA" | grep -q "wtmp starts"; then
