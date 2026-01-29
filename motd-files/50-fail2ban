@@ -32,7 +32,7 @@ if command -v fail2ban-client >/dev/null 2>&1; then
             "table" | "t")
                 printf "\n${LBLUE} FAIL2BAN: ${NC}\n"
                 printf " | %-15s | %-15s | \n" "Active Jails:" "Currently Banned:"
-                printf " | %-15s | ${COLOR}%-15s${NC} | \n" "$TOTAL_BANS" "$JAIL_COUNT"
+                printf " | %-15s | ${COLOR}%-15s${NC} | \n" "$JAIL_COUNT" "$TOTAL_BANS"
                 ;;
             *)
                 printf "\n${LBLUE} FAIL2BAN: ${NC}\n"

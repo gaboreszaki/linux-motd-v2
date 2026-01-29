@@ -61,7 +61,7 @@ if [ -f "$UPDATES_FILE" ]; then
         "table" | "t")
              printf "\n${LBLUE} UPDATES & MAINTENANCE ${NC}\n"
              printf " | %-10s | %-10s | %-10s | %-10s |\n" "Packages" "Sec" "Reboot" "Distro Update"
-             printf " | ${TOTAL_COLOR}%-10s${NC} | ${SEC_COLOR}%-10s${NC} | %s | %s |\n" "$TOTAL" "$SEC" "$REBOOT_STATUS"
+             printf " | ${TOTAL_COLOR}%-10s${NC} | ${SEC_COLOR}%-10s${NC} | ${REBOOT_COLOR}%-10s${NC} | %-s |\n" "$TOTAL" "$SEC" "$REBOOT_STATUS" "$DISTRO_UPDATE_MSG"
              ;;
         *)
             printf "\n${LBLUE} UPDATES & MAINTENANCE ${NC}\n"
