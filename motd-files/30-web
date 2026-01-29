@@ -72,7 +72,7 @@ if [ -s "$CLEAN_DOMAINS_FILE" ]; then
                 # We put the color codes INSIDE the format string so they wrap the padded text.
                 # %-9s ensures the text "OK" (2 chars) takes up 9 spaces visually.
                 # The color codes are invisible and don't mess up alignment this way.
-                printf "  %-30s | ${H1_COL}%-5s${NC} | ${H2_COL}%-5s${NC}\n" "$domain" "$H1_TXT" "$H2_TXT"
+                printf "| %-30s | ${H1_COL}%-5s${NC} | ${H2_COL}%-5s${NC} |\n" "$domain" "$H1_TXT" "$H2_TXT"
             
             done < "$CLEAN_DOMAINS_FILE"
             ;;

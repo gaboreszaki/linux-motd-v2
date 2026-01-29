@@ -22,17 +22,22 @@ if command -v fail2ban-client >/dev/null 2>&1; then
         
         # Color logic for bans
         COLOR=$GREEN
-        [ "$TOTAL_BANS" -gt 0 ] && COLOR=$YELLOW
-        [ "$TOTAL_BANS" -gt 10 ] && COLOR=$RED
+        [ "$TOTAL_BANS" -gt 30 ] && COLOR=$YELLOW
+        [ "$TOTAL_BANS" -gt 100 ] && COLOR=$RED
 
         case "$ENABLE_FAIL2BAN" in
             "short" | "s")
                 printf "  ${LBLUE}F2B:${NC} ${LWHITE}%s${NC} jails, ${COLOR}%s${NC} bans\n" "$JAIL_COUNT" "$TOTAL_BANS"
                 ;;
+            "table" | "t")
+                printf "\n${LBLUE} FAIL2BAN: ${NC}\n"
+                printf "| %-15s | %-15s | \n" "Active Jails:" "Currently Banned:"
+                printf "| %-15s | ${COLOR}%-15s${NC} | \n" "$TOTAL_BANS" "$JAIL_COUNT"
+                ;;
             *)
-                printf "\n${LBLUE} FAIL2BAN PROTECTION ${NC}\n"
-                printf "  %-20s %s\n" "Active Jails:" "$JAIL_COUNT"
-                printf "  %-20s ${COLOR}%s IPs${NC}\n" "Currently Banned:" "$TOTAL_BANS"
+                printf "\n${LBLUE} FAIL2BAN: ${NC}\n"
+                printf "| %-20s %s\n |" "Active Jails:" "$JAIL_COUNT"
+                printf "| %-20s ${COLOR}%s IPs${NC} |\n" "Currently Banned:" "$TOTAL_BANS"
                 ;;
         esac
     else
