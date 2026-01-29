@@ -52,7 +52,7 @@ case "$ENABLE_SYSINFO" in
         ;;
     "table" | "t")
 #        # Table View
-        printf " | %-30s | %-30s | %-30s | %-30s | %-30s |\n" "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (used/total/percent)"
+        printf " ${BG_BLUE}| %-30s | %-30s | %-30s | %-30s | %-30s |${NC}\n" "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (used/total/percent)"
         printf " | ${LBLUE}%-30s${NC} | ${LGREEN}%-30s${NC} | ${LBLUE}%-30s${NC} | ${LOAD_COLOR}%-30s${NC} | ${MEM_COLOR}%-30s${NC} | \n" "$HOST_NAME" "$KERNEL" "$UPTIME" "$LOAD" "$MEM_USED MB / $MEM_TOTAL MB / $MEM_PERC %"
         ;;
 
