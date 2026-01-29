@@ -25,7 +25,7 @@ grep -vE "^$|localhost|_" "$DOMAINS_FILE" | sort | uniq > "$CLEAN_DOMAINS_FILE"
 if [ -s "$CLEAN_DOMAINS_FILE" ]; then
     case "$ENABLE_HOST_SERVICES" in
         "short" | "s")
-             printf "  ${LBLUE}Websites:${NC} "
+             printf "  ${LBLUE}Websites: ${NC} "
              while read -r domain; do
                 domain=$(echo "$domain" | xargs)
                 H1_TXT=$(curl -s -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" "https://$domain")
@@ -40,8 +40,8 @@ if [ -s "$CLEAN_DOMAINS_FILE" ]; then
              printf "\n"
             ;;
         *)
-            printf "\n${LBLUE} HOST & WEB SERVICES ${NC}\n"
-            printf "  %-30s | %-9s | %-9s\n" "Active Domains:" "HTTP" "HTTPS"
+            printf "\n${LBLUE} Websites: ${NC}\n"
+            printf "| %-30s | %-5s | %-5s |\n" "Active Domains:" "HTTP" "HTTPS"
             printf "  %s\n" "-------------------------------------------------------------"
 
             while read -r domain; do

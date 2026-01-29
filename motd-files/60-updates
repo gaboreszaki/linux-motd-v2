@@ -22,10 +22,10 @@ if [ -f "$REL_FILE" ]; then
 fi
 
 
-REBOOT_STATUS="NO"
+REBOOT_STATUS="${LGEEN}NO${NC}"
 # --- Reboot Status ---
 if [ -f /var/run/reboot-required ]; then
-   REBOOT_STATUS="YES"
+   REBOOT_STATUS="${RED}YES${NC}"
 fi
 
 if [ -f "$UPDATES_FILE" ]; then
@@ -57,11 +57,11 @@ if [ -f "$UPDATES_FILE" ]; then
              printf "  ${LBLUE}Updates:${NC} ${TOTAL_COLOR}%s${NC} (Sec: ${SEC_COLOR}%s${NC}). ${LBLUE}Reboot:${NC} %s ${LBLUE}Distro updates:${NC} %s \n" "$TOTAL" "$SEC" "$REBOOT_STATUS" "$DISTRO_UPDATE_MSG"
              ;;
         "table" | "t")
-             printf "  %-10s | %-10s | %-10s\n" "Pkg" "Sec" "Reboot"
-             printf "  ${TOTAL_COLOR}%-10s${NC} | ${SEC_COLOR}%-10s${NC} | %s\n" "$TOTAL" "$SEC" "$REBOOT_STATUS"
+             printf "| %-10s | %-10s | %-10s | %-10s |\n" "Packages" "Sec" "Reboot" "Distro Update"
+             printf "| ${TOTAL_COLOR}%-10s${NC} | ${SEC_COLOR}%-10s${NC} | %s | %s |\n" "$TOTAL" "$SEC" "$REBOOT_STATUS"
              ;;
         *)
-            printf "\n${LBLUE} UPDATES & MAINTENANCE ${NC}\n"
+            print "\n${LBLUE} UPDATES & MAINTENANCE ${NC}\n"
             printf "  %-20s ${TOTAL_COLOR}%s${NC}\n" "Packages to update:" "$TOTAL"
             printf "  %-20s ${SEC_COLOR}%s${NC}\n" "Security updates:" "$SEC"
 
