@@ -63,7 +63,7 @@ if [ -f "$UPDATES_FILE" ]; then
              printf "| ${TOTAL_COLOR}%-10s${NC} | ${SEC_COLOR}%-10s${NC} | %s | %s |\n" "$TOTAL" "$SEC" "$REBOOT_STATUS"
              ;;
         *)
-            print "\n${LBLUE} UPDATES & MAINTENANCE ${NC}\n"
+            printf "\n${LBLUE} UPDATES & MAINTENANCE ${NC}\n"
             printf "  %-20s ${TOTAL_COLOR}%s${NC}\n" "Packages to update:" "$TOTAL"
             printf "  %-20s ${SEC_COLOR}%s${NC}\n" "Security updates:" "$SEC"
 
