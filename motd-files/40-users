@@ -63,14 +63,14 @@ case "$ENABLE_USERS" in
     *)
 
         printf "\n${LBLUE} User info: ${NC}\n"
-        printf " | %-20s ${LWHITE}%s${NC} |\n" "Active Sessions:" "$ACTIVE_COUNT"
+        printf " %-20s ${LWHITE}%20s${NC}\n" "Active Sessions:" "$ACTIVE_COUNT"
         # Check if RAW_DATA is valid (not empty and not the wtmp footer)
         if [ -z "$RAW_DATA" ] || echo "$RAW_DATA" | grep -q "wtmp starts"; then
-            printf " | %-20s ${LBLACK}(First login or history cleared)${NC} |\n" "Last Login:"
+            printf " %-20s ${LBLACK}(First login or history cleared)${NC}\n" "Last Login:"
         else
-            printf " | %-20s %s |\n" "User History:" "$TARGET_USER"
-            printf " | %-20s ${LCYAN}%s${NC} %s |\n" "Previous IP:" "$L_IP" "$LOCATION"
-            printf " | %-20s %s |\n" "Previous Date:" "$L_DATE"
+            printf " %-20s %20s\n" "User History:" "$TARGET_USER"
+            printf " %-20s ${LCYAN}%s${NC} %s\n" "Previous IP:" "$L_IP" "$LOCATION"
+            printf " %-20s %20s\n" "Previous Date:" "$L_DATE"
         fi
         ;;
 esac

@@ -36,8 +36,8 @@ if command -v fail2ban-client >/dev/null 2>&1; then
                 ;;
             *)
                 printf "\n${LBLUE} Fail2Ban: ${NC}\n"
-                printf " | %-20s %s\n |" "Active Jails:" "$JAIL_COUNT"
-                printf " | %-20s ${COLOR}%s IPs${NC} |\n" "Currently Banned:" "$TOTAL_BANS"
+                printf " %-20s %s\n " "Active Jails:" "$JAIL_COUNT"
+                printf " %-20s ${COLOR}%s IPs${NC}\n" "Ban count:" "$TOTAL_BANS"
                 ;;
         esac
     else
