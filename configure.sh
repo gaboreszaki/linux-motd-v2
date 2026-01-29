@@ -12,7 +12,7 @@ configure_motd() {
 
         # Prepare colored prompt
         local prompt_text
-        prompt_text=$(echo -e "${CYAN}$prompt${NC} ${LBLACK}(y/n/s/t)${NC} [${WHITE}$default${NC}]:")
+        prompt_text=$(echo -e "${LBLUE}$prompt${NC} ${LBLACK}(y/n/s/t)${NC} [${WHITE}$default${NC}]:")
 
         while true; do
             read -p "$prompt_text" choice
@@ -28,7 +28,7 @@ configure_motd() {
     }
 
     draw_line
-    echo -e "${LCYAN}Interactive Configuration${NC}"
+    echo -e "${LCYAN}Configuration:${NC}"
     draw_line
 
     # Try to import config from current installation if local is missing

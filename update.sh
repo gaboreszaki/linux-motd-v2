@@ -11,7 +11,7 @@ echo -e "${LCYAN}Updating Linux MOTD...${NC}"
 draw_line
 
 validate_root_privileges
-get_config_script
+
 
 # 1. Pull latest changes from git
 echo -e "${LGREEN}Resetting local changes.${NC}(custom logo and settings are not affected)"
@@ -28,13 +28,7 @@ chmod +x remove.sh
 chmod +x configure.sh
 
 # Load and run configuration
-echo -e "${CYAN}Loading Configure script${NC}"
-if [ -f "./configure.sh" ]; then
-    source ./configure.sh
-    configure_motd "$SOURCE_DIR" "$MOTD_DIR"
-else
-    echo -e "${RED}Warning: configure.sh not found. Skipping configuration.${NC}"
-fi
+get_config_script
 
 # 2. Update files
 echo -e "${CYAN}Update MOTD files${NC}"
