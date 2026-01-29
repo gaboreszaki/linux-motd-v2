@@ -26,8 +26,8 @@ echo -e "${LGREEN}Resetting local changes.${NC}(custom logo and settings are not
 git reset --hard HEAD
 echo -e "${LGREEN}Pulling latest changes from repository...${NC}"
 git pull
-echo -e "${LGREEN}Change branch to: ${BRANCH}${NC}"
-git checkout ${BRANCH}
+#echo -e "${LGREEN}Change branch to: ${BRANCH}${NC}"
+#git checkout ${BRANCH}
 
 echo -e "${LGREEN}Enable execute permissions${NC}"
 #1b. Add execute permission to the script files:
@@ -67,4 +67,4 @@ echo -e "${LGREEN}Remove execute permission from non-script files${NC}"
 echo -e "${BLUE}------------------------------------------------${NC}"
 echo -e "${GREEN}Update complete!${NC}"
 printf "\n"
-echo "${LCYAN}Note:${NC} To add or modify a custom logo file run ${LGREEN}'nano /etc/update-motd.d/logo-custom.txt'${NC} and paste your logo."
+echo -e "${LCYAN}Note:${NC} To add or modify a custom logo file run ${LGREEN}'nano /etc/update-motd.d/logo-custom.txt'${NC} and paste your logo."
