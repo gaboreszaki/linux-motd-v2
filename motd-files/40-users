@@ -3,20 +3,15 @@
 
 if [ "$ENABLE_USERS" = "n" ]; then exit 0; fi
 
-printf "\n${LBLUE} USERS ${NC}\n"
-
 # 1. Active Users Count
 # We count lines from 'who'
 ACTIVE_COUNT=$(who | wc -l)
-printf "  %-20s ${LWHITE}%s${NC}\n" "Active Sessions:" "$ACTIVE_COUNT"
-
 
 # 2. Determine "Current" User
 # 'logname' returns the user of the controlling tty (the person logging in)
 # If that fails (no tty), fall back to the executing user (likely root)
 TARGET_USER=$(logname 2>/dev/null)
 [ -z "$TARGET_USER" ] && TARGET_USER=$(whoami)
-
 
 # 3. Get Previous Login Data
 # 'last -i' forces IP addresses.
@@ -52,9 +47,30 @@ else
             LOCATION="(${CITY}, ${CNTRY})"
         fi
     fi
-
-    # Display
-    printf "  %-20s %s\n" "User History:" "$TARGET_USER"
-    printf "  %-20s ${LCYAN}%s${NC} %s\n" "Previous IP:" "$L_IP" "$LOCATION"
-    printf "  %-20s %s\n" "Previous Date:" "$L_DATE"
 fi
+
+# Display
+case "$ENABLE_USERS" in
+    "short" | "s")
+        if [ -n "$LOCATION" ]; then LOC_STR="$LOCATION"; else LOC_STR=""; fi
+        printf "  ${LBLUE}Users:${NC} ${LWHITE}%s${NC} active. ${LBLUE}Last:${NC} %s from ${LCYAN}%s${NC} %s\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP" "$LOC_STR"
+        ;;
+    "table" | "t")
+        printf "\n${LBLUE} User info: ${NC}\n"
+        printf " ${BG_BLUE}| %-8s | %-15s | %15s | %-30s |${NC}\n" "Active" "Last User" "Last IP" "Location"
+        printf " | %-8s | %-15s | ${LGREEN}%15s${NC} | ${LCYAN}%-31s${NC} |\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP" "$LOCATION"
+        ;;
+    *)
+
+        printf "\n${LBLUE} User info: ${NC}\n"
+        printf "  %-20s ${LWHITE}%-s${NC}\n" "Active Sessions:" "$ACTIVE_COUNT"
+        # Check if RAW_DATA is valid (not empty and not the wtmp footer)
+        if [ -z "$RAW_DATA" ] || echo "$RAW_DATA" | grep -q "wtmp starts"; then
+            printf "  %-20s ${LBLACK}(First login or history cleared)${NC}\n" "Last Login:"
+        else
+            printf "  %-20s %-s\n" "User History:" "$TARGET_USER"
+            printf "  %-20s ${LCYAN}%-s${NC} %s\n" "Previous IP:" "$L_IP" "$LOCATION"
+            printf "  %-20s %-s\n" "Previous Date:" "$L_DATE"
+        fi
+        ;;
+esac

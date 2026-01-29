@@ -3,24 +3,40 @@
 
 if [ "$ENABLE_DISK_USAGE" = "n" ]; then exit 0; fi
 
-printf "\n${LBLUE} DISK USAGE ${NC}\n"
-printf "  %-15s %-10s %-10s %-8s %-s\n" "Mount" "Size" "Used" "Use%" "Status"
+case "$ENABLE_DISK_USAGE" in
+    "short" | "s")
+        printf "  ${LBLUE}Disk:${NC} "
+        # Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
+        df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort | while read -r fs size used avail perc mount; do
+            PERC_VAL=$(echo "$perc" | tr -d '%')
+            COLOR=$GREEN
+            if [ "$PERC_VAL" -ge 80 ]; then COLOR=$YELLOW; fi
+            if [ "$PERC_VAL" -ge 90 ]; then COLOR=$RED; fi
+            printf "${COLOR}%s %s${NC} " "$mount" "$perc"
+        done
+        printf "\n"
+        ;;
+    *)
+        printf "\n${LBLUE} Disk Info: ${NC}\n"
+        printf " ${BG_BLUE}| %-15s | %-10s | %-10s | %-8s | %-8s |${NC}\n" "Mount" "Size" "Used" "Percent" "Status"
 
-# Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
-df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort | while read -r fs size used avail perc mount; do
-    PERC_VAL=$(echo "$perc" | tr -d '%')
-    
-    COLOR=$GREEN
-    STATUS="OK"
-    
-    if [ "$PERC_VAL" -ge 80 ]; then
-        COLOR=$YELLOW
-        STATUS="WARN"
-    fi
-    if [ "$PERC_VAL" -ge 90 ]; then
-        COLOR=$RED
-        STATUS="CRIT"
-    fi
-    
-    printf "  %-15s %-10s %-10s ${COLOR}%-8s${NC} ${COLOR}%-s${NC}\n" "$mount" "$size" "$used" "$perc" "$STATUS"
-done
+        # Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
+        df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort | while read -r fs size used avail perc mount; do
+            PERC_VAL=$(echo "$perc" | tr -d '%')
+        
+            COLOR=$GREEN
+            STATUS="OK"
+        
+            if [ "$PERC_VAL" -ge 80 ]; then
+                COLOR=$YELLOW
+                STATUS="WARN"
+            fi
+            if [ "$PERC_VAL" -ge 90 ]; then
+                COLOR=$RED
+                STATUS="CRIT"
+            fi
+        
+            printf " | %-15s | %-10s | %-10s | ${COLOR}%-8s${NC} | ${COLOR}%-8s${NC} |\n" "$mount" "$size" "$used" "$perc" "$STATUS"
+        done
+        ;;
+esac

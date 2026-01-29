@@ -1,17 +1,18 @@
 #!/bin/sh
 
-logo_file="/etc/update-motd.d/logo-default.txt"
-custom_logo_file="/etc/update-motd.d/logo-custom.txt"
+LOGO_FILE="/etc/update-motd.d/logo-default.txt"
+CUSTOM_LOGO_FILE="/etc/update-motd.d/logo-custom.txt"
+CONFIG_FILE="/etc/update-motd.d/motd.conf"
 
 # Check for custom logo
-if [ -f "$custom_logo_file" ]; then
-    logo_file="$custom_logo_file"
+if [ -f "$CUSTOM_LOGO_FILE" ]; then
+    LOGO_FILE="$CUSTOM_LOGO_FILE"
 fi
-config_file="/etc/update-motd.d/motd.conf"
+
 
 # Load Configuration if exists
-if [ -f "$config_file" ]; then
-    . "$config_file"
+if [ -f "$CONFIG_FILE" ]; then
+    . "$CONFIG_FILE"
 fi
 
 # Color codes
@@ -59,13 +60,13 @@ BG_WHITE='\033[47m'
 
 print_rainbow_logo() {
 
-  if [ -f "$logo_file" ]; then
+  if [ -f "$LOGO_FILE" ]; then
     # Assigning colors to an array-like sequence for the lines
     # Line 1: Red, Line 2: Yellow, Line 3: Green, Line 4: Blue/Cyan
-    sed -n '1p' "$logo_file" | printf "${LRED}%s${NC}\n" "$(cat)"
-    sed -n '2p' "$logo_file" | printf "${LYELLOW}%s${NC}\n" "$(cat)"
-    sed -n '3p' "$logo_file" | printf "${LGREEN}%s${NC}\n" "$(cat)"
-    sed -n '4p' "$logo_file" | printf "${LCYAN}%s${NC}\n" "$(cat)"
+    sed -n '1p' "$LOGO_FILE" | printf "${LRED}%s${NC}\n" "$(cat)"
+    sed -n '2p' "$LOGO_FILE" | printf "${LYELLOW}%s${NC}\n" "$(cat)"
+    sed -n '3p' "$LOGO_FILE" | printf "${LGREEN}%s${NC}\n" "$(cat)"
+    sed -n '4p' "$LOGO_FILE" | printf "${LCYAN}%s${NC}\n" "$(cat)"
   fi
 }
 
@@ -74,10 +75,10 @@ print_colored_logo() {
   color_name=$1
   color_code=$(eval echo \$"$color_name")
 
-  if [ -f "$logo_file" ]; then
+  if [ -f "$LOGO_FILE" ]; then
     while IFS= read -r line || [ -n "$line" ]; do
       printf "${color_code:-$color_name}%s${NC}\n" "$line"
-    done < "$logo_file"
+    done < "$LOGO_FILE"
   fi
 
 }
