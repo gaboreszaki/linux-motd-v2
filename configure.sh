@@ -4,38 +4,50 @@ configure_motd() {
     local SOURCE_DIR="$1"
     local MOTD_DIR="$2"
     local MOTD_CONF="$SOURCE_DIR/motd.conf"
+    
+    # Ensure colors are loaded if variables are empty
+    if [ -z "${RED}" ] && [ -f "./text-colors.sh" ]; then
+        # shellcheck source=./text-colors.sh
+        . "./text-colors.sh"
+    fi
 
     ask_option() {
         local prompt="$1"
         local config_var="$2"
         local default="$3"
 
+        # Prepare colored prompt
+        local prompt_text
+        prompt_text=$(echo -e "${LCYAN}$prompt ${LBLUE}(y/n/s/t) [${WHITE}$default${LBLUE}]: ${NC}")
+
         while true; do
-            read -p "$prompt (y/n/s/t) [$default]: " choice
+            read -p "$prompt_text" choice
             case $choice in
                 [Yy]* ) echo "$config_var=\"y\"" >> "$MOTD_CONF"; break;;
                 [Nn]* ) echo "$config_var=\"n\"" >> "$MOTD_CONF"; break;;
                 [Ss]* ) echo "$config_var=\"short\"" >> "$MOTD_CONF"; break;;
                 [Tt]* ) echo "$config_var=\"table\"" >> "$MOTD_CONF"; break;;
                 "" ) echo "$config_var=\"$default\"" >> "$MOTD_CONF"; break;;
-                * ) echo "Please answer yes, no, short, or table.";;
+                * ) echo -e "${RED}Please answer yes, no, short, or table.${NC}";;
             esac
         done
     }
 
-    echo "------------------------------------------------"
-    echo "Interactive Configuration"
-    echo "------------------------------------------------"
+    echo -e "${BLUE}------------------------------------------------${NC}"
+    echo -e "${BLUE}Interactive Configuration${NC}"
+    echo -e "${BLUE}------------------------------------------------${NC}"
 
     # Try to import config from current installation if local is missing
     if [ ! -f "$MOTD_CONF" ] && [ -f "$MOTD_DIR/motd.conf" ]; then
         cp "$MOTD_DIR/motd.conf" "$MOTD_CONF"
-        echo "Imported existing configuration from $MOTD_DIR."
+        echo -e "${LGREEN}Imported existing configuration from $MOTD_DIR.${NC}"
     fi
 
     local DO_CONFIGURE=true
     if [ -f "$MOTD_CONF" ]; then
-        read -p "Configuration file found. Reconfigure? (y/n) [n]: " yn
+        local reconf_prompt
+        reconf_prompt=$(echo -e "${LYELLOW}Configuration file found. Reconfigure? (y/n) [n]: ${NC}")
+        read -p "$reconf_prompt" yn
         case $yn in
             [Yy]* ) DO_CONFIGURE=true ;;
             * ) DO_CONFIGURE=false ;;
@@ -55,9 +67,9 @@ configure_motd() {
         ask_option "Enable Fail2Ban Protection?" "ENABLE_FAIL2BAN" "y"
         ask_option "Enable Updates & Maintenance?" "ENABLE_UPDATES" "y"
 
-        echo "Configuration saved."
+        echo -e "${GREEN}Configuration saved.${NC}"
     else
-        echo "Skipping configuration steps. Using existing motd.conf."
+        echo -e "${LCYAN}Skipping configuration steps. Using existing motd.conf.${NC}"
     fi
-    echo "------------------------------------------------"
+    echo -e "${BLUE}------------------------------------------------${NC}"
 }
