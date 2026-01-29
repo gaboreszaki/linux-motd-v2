@@ -5,7 +5,7 @@ MOTD_DIR="/etc/update-motd.d"
 SOURCE_DIR="./motd-files"
 
 # Load Common Scripts
-. common.sh
+. ./common.sh
 draw_line
 echo -e "${LCYAN}Updating Linux MOTD...${NC}"
 draw_line
@@ -18,8 +18,7 @@ echo -e "${LGREEN}Resetting local changes.${NC}(custom logo and settings are not
 git reset --hard HEAD
 echo -e "${LGREEN}Pulling latest changes from repository...${NC}"
 git pull
-#echo -e "${LGREEN}Change branch to: ${BRANCH}${NC}"
-#git checkout ${BRANCH}
+
 
 echo -e "${LGREEN}Enable execute permissions${NC}"
 #1b. Add execute permission to the script files:

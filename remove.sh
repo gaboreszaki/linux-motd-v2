@@ -5,7 +5,7 @@ MOTD_DIR="/etc/update-motd.d"
 BACKUP_DIR="/etc/update-motd.d.bak"
 
 # Load Common Scripts
-. common.sh
+. ./common.sh
 
 draw_line
 echo -e "${LCYAN}Uninstalling Linux MOTD...${NC}"

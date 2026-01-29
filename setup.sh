@@ -7,7 +7,7 @@ SOURCE_DIR="./motd-files"
 
 
 # Load Common Scripts
-. common.sh
+. ./common.sh
 draw_line
 echo -e "${LCYAN}Starting Installation${NC}"
 draw_line
