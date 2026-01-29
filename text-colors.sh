@@ -20,3 +20,25 @@ LBLUE='\033[1;34m'
 LPURPLE='\033[1;35m'
 LCYAN='\033[1;36m'
 LWHITE='\033[1;37m'
+
+
+test_colors() {
+    printf "${BLACK}BLACK      : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${RED}RED        : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${GREEN}GREEN      : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${YELLOW}YELLOW     : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${BLUE}BLUE       : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${PURPLE}PURPLE     : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${CYAN}CYAN       : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${WHITE}WHITE      : The quick brown fox jumps over the lazy dog${NC}\n"
+
+    printf "${LBLACK}LBLACK     : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${LRED}LRED       : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${LGREEN}LGREEN     : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${LYELLOW}LYELLOW    : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${LBLUE}LBLUE      : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${LPURPLE}LPURPLE    : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${LCYAN}LCYAN      : The quick brown fox jumps over the lazy dog${NC}\n"
+    printf "${LWHITE}LWHITE     : The quick brown fox jumps over the lazy dog${NC}\n"
+}
+

@@ -68,5 +68,5 @@ chmod +x "$MOTD_DIR"/*
 
 echo -e "${BLUE}------------------------------------------------${NC}"
 echo -e "Installation complete!"
-echo -e "${LCYAN}Note:${NC} To add a custom logo file run 'nano /etc/update-motd.d/logo-custom.txt' and paste your logo."
+echo -e "${LCYAN}Note:${NC} To add a custom logo file run ${LGREEN}'nano /etc/update-motd.d/logo-custom.txt'${NC} and paste your logo."
 echo -e "${LCYAN}Note:${NC} Try logging in to a new terminal session or run 'run-parts /etc/update-motd.d' to test.\n"
