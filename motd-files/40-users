@@ -56,7 +56,7 @@ case "$ENABLE_USERS" in
         printf "  ${LBLUE}User:${NC} ${LWHITE}%s${NC} active. ${LBLUE}Last:${NC} %s from ${LCYAN}%s${NC} %s\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP" "$LOC_STR"
         ;;
     "table" | "t")
-        print "\n${LBLUE} User info: ${NC}\n"
+        printf "\n${LBLUE} User info: ${NC}\n"
         printf "| %-15s | %-15s | %-20s |\n" "Active" "Last User" "Last IP"
         printf "| %-15s | %-15s | ${LCYAN}%-20s${NC} |\n" "$ACTIVE_COUNT" "$TARGET_USER" "$L_IP"
         ;;
