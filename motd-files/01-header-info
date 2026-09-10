@@ -1,8 +1,7 @@
-#!/bin/sh
-
+#!/bin/bash
 . /etc/update-motd.d/helper.sh
 
-if [ "$ENABLE_HEADER" = "n" ]; then exit 0; fi
+[[ "$ENABLE_HEADER" == "n" ]] && exit 0
 
 print_colored_logo "LCYAN"
 print_empty_line

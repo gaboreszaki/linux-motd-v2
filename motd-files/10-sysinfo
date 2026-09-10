@@ -1,68 +1,52 @@
-#!/bin/sh
+#!/bin/bash
 . /etc/update-motd.d/helper.sh
 
-if [ "$ENABLE_SYSINFO" = "n" ]; then exit 0; fi
-
-
-
+[[ "$ENABLE_SYSINFO" == "n" ]] && exit 0
 
 # Gather System Info
 KERNEL=$(uname -r)
-# Simple uptime formatting
 UPTIME=$(uptime -p | sed 's/up //')
 
 # Load Average
-LOAD=$(cat /proc/loadavg | awk '{print $1" "$2" "$3}')
-LOAD1=$(echo "$LOAD" | awk '{print $1}')
+LOAD=$(awk '{print $1" "$2" "$3}' /proc/loadavg)
+LOAD1=${LOAD%% *}
 
 # Memory Usage
 MEM_TOTAL=$(free -m | awk '/Mem:/ {print $2}')
 MEM_USED=$(free -m | awk '/Mem:/ {print $3}')
-if [ "$MEM_TOTAL" -gt 0 ]; then
-    MEM_PERC=$(( 100 * MEM_USED / MEM_TOTAL ))
-else
-    MEM_PERC=0
-fi
+MEM_PERC=0
+[[ "$MEM_TOTAL" -gt 0 ]] && MEM_PERC=$(( 100 * MEM_USED / MEM_TOTAL ))
 
-# Determine Load Color (Simple check assuming multi-core, adjust thresholds as needed)
+# Determine Load Color
 LOAD_COLOR=$GREEN
 awk -v l="$LOAD1" 'BEGIN {exit !(l > 2.0)}' && LOAD_COLOR=$YELLOW
 awk -v l="$LOAD1" 'BEGIN {exit !(l > 4.0)}' && LOAD_COLOR=$RED
 
 # Determine Memory Color
 MEM_COLOR=$GREEN
-[ "$MEM_PERC" -ge 75 ] && MEM_COLOR=$YELLOW
-[ "$MEM_PERC" -ge 90 ] && MEM_COLOR=$RED
+[[ "$MEM_PERC" -ge 75 ]] && MEM_COLOR=$YELLOW
+[[ "$MEM_PERC" -ge 90 ]] && MEM_COLOR=$RED
 
-# Display
-
-# --- Hostname ---
+# Hostname
 HOST=$(hostname)
+HOST_NAME="$HOST"
 FQDN=$(hostname -f 2>/dev/null)
-if [ -n "$FQDN" ] && [ "$FQDN" != "$HOST" ]; then
-    HOST_NAME="$HOST $FQDN"
-else
-    HOST_NAME="$HOST"
-fi
+[[ -n "$FQDN" && "$FQDN" != "$HOST" ]] && HOST_NAME="$HOST $FQDN"
 
 case "$ENABLE_SYSINFO" in
     "short" | "s")
-        # Short View
         printf "  ${LBLUE}Sys:${NC} ${LWHITE}%s${NC} | ${LBLUE}Kernel:${NC} %s | ${LBLUE}Up:${NC} %s | ${LBLUE}Load:${NC} ${LOAD_COLOR}%s${NC} | ${LBLUE}Mem:${NC} ${MEM_COLOR}%s%%${NC}\n" "$HOST" "$KERNEL" "$UPTIME" "$LOAD1" "$MEM_PERC"
         ;;
     "table" | "t")
-#        # Table View
-        printf " ${BG_BLUE}| %-30s | %-30s | %-30s | %-30s | %-30s |${NC}\n" "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory (used/total/percent)"
-        printf " | ${LBLUE}%-30s${NC} | ${LGREEN}%-30s${NC} | ${LBLUE}%-30s${NC} | ${LOAD_COLOR}%-30s${NC} | ${MEM_COLOR}%-30s${NC} | \n" "$HOST_NAME" "$KERNEL" "$UPTIME" "$LOAD" "$MEM_USED MB / $MEM_TOTAL MB / $MEM_PERC %"
+        print_table_header "Hostname" "Kernel" "Uptime" "Avg. Load" "Memory"
+        print_table_row "${LBLUE}$HOST_NAME${NC}" "${LGREEN}$KERNEL${NC}" "${LBLUE}$UPTIME${NC}" "${LOAD_COLOR}$LOAD${NC}" "${MEM_COLOR}${MEM_USED}MB / ${MEM_TOTAL}MB (${MEM_PERC}%)${NC}"
         ;;
-
     *)
-        # Normal View
-        printf "\n${LBLUE} SYSTEM STATUS ${NC}\n"
-        printf "  %-20s ${LWHITE}%s${NC}\n" "Hostname:" "$HOST_NAME"
-        printf "  %-20s %s\n" "Kernel:" "$KERNEL"
-        printf "  %-20s %s\n" "Uptime:" "$UPTIME"
-        printf "  %-20s ${LOAD_COLOR}%s${NC}\n" "Load Average:" "$LOAD"
-        printf "  %-20s ${MEM_COLOR}%sMB / %sMB (%s%%)${NC}\n" "Memory:" "$MEM_USED" "$MEM_TOTAL" "$MEM_PERC"
+        print_header "SYSTEM STATUS"
+        print_normal_row "Hostname:" "$HOST_NAME" "$LWHITE"
+        print_normal_row "Kernel:" "$KERNEL"
+        print_normal_row "Uptime:" "$UPTIME"
+        print_normal_row "Load Average:" "$LOAD" "$LOAD_COLOR"
+        print_normal_row "Memory:" "${MEM_USED}MB / ${MEM_TOTAL}MB (${MEM_PERC}%)" "$MEM_COLOR"
         ;;
 esac

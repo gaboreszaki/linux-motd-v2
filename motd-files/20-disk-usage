@@ -1,42 +1,51 @@
-#!/bin/sh
+#!/bin/bash
 . /etc/update-motd.d/helper.sh
 
-if [ "$ENABLE_DISK_USAGE" = "n" ]; then exit 0; fi
+[[ "$ENABLE_DISK_USAGE" == "n" ]] && exit 0
+
+# Function to get disk data
+get_disk_data() {
+    # Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
+    df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort
+}
 
 case "$ENABLE_DISK_USAGE" in
     "short" | "s")
         printf "  ${LBLUE}Disk:${NC} "
-        # Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
-        df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort | while read -r fs size used avail perc mount; do
-            PERC_VAL=$(echo "$perc" | tr -d '%')
+        get_disk_data | while read -r _ size used _ perc mount; do
+            PERC_VAL=${perc%\%}
             COLOR=$GREEN
-            if [ "$PERC_VAL" -ge 80 ]; then COLOR=$YELLOW; fi
-            if [ "$PERC_VAL" -ge 90 ]; then COLOR=$RED; fi
+            [[ "$PERC_VAL" -ge 80 ]] && COLOR=$YELLOW
+            [[ "$PERC_VAL" -ge 90 ]] && COLOR=$RED
             printf "${COLOR}%s %s${NC} " "$mount" "$perc"
         done
         printf "\n"
         ;;
-    *)
-        printf "\n${LBLUE} Disk Info: ${NC}\n"
-        printf " ${BG_BLUE}| %-15s | %-10s | %-10s | %-8s | %-8s |${NC}\n" "Mount" "Size" "Used" "Percent" "Status"
-
-        # Filter out tmpfs, devtmpfs, squashfs (snaps), and cdroms
-        df -hP -x tmpfs -x devtmpfs -x squashfs -x overlay | grep -v "^Filesystem" | sort | while read -r fs size used avail perc mount; do
-            PERC_VAL=$(echo "$perc" | tr -d '%')
-        
+    "table" | "t")
+        print_header "Disk Info"
+        print_table_header "Mount" "Size" "Used" "Percent" "Status"
+        get_disk_data | while read -r _ size used _ perc mount; do
+            PERC_VAL=${perc%\%}
             COLOR=$GREEN
             STATUS="OK"
-        
-            if [ "$PERC_VAL" -ge 80 ]; then
+            if [[ "$PERC_VAL" -ge 90 ]]; then
+                COLOR=$RED
+                STATUS="CRIT"
+            elif [[ "$PERC_VAL" -ge 80 ]]; then
                 COLOR=$YELLOW
                 STATUS="WARN"
             fi
-            if [ "$PERC_VAL" -ge 90 ]; then
-                COLOR=$RED
-                STATUS="CRIT"
-            fi
-        
-            printf " | %-15s | %-10s | %-10s | ${COLOR}%-8s${NC} | ${COLOR}%-8s${NC} |\n" "$mount" "$size" "$used" "$perc" "$STATUS"
+            print_table_row "$mount" "$size" "$used" "${COLOR}${perc}${NC}" "${COLOR}${STATUS}${NC}"
+        done
+        ;;
+    *)
+        print_header "Disk Info"
+        get_disk_data | while read -r _ size used _ perc mount; do
+            PERC_VAL=${perc%\%}
+            COLOR=$GREEN
+            [[ "$PERC_VAL" -ge 80 ]] && COLOR=$YELLOW
+            [[ "$PERC_VAL" -ge 90 ]] && COLOR=$RED
+            print_normal_row "$mount:" "$used / $size ($perc)" "$COLOR"
         done
         ;;
 esac
