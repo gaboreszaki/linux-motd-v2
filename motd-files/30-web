@@ -3,6 +3,24 @@
 
 if [ "$ENABLE_HOST_SERVICES" = "n" ]; then exit 0; fi
 
+get_http_status() {
+    local url=$1
+    local domain=$2
+    local code
+
+    # Check status using --connect-to localhost
+    code=$(curl -s -k -I -m 0.5 -o /dev/null -w "%{http_code}" --connect-to "$domain:80:127.0.0.1:80" --connect-to "$domain:443:127.0.0.1:443" "$url")
+
+    case "$code" in
+        2*) color=$GREEN ;;
+        3*) color=$LYELLOW ;;
+        4*) color=$ORANGE ;;
+        *)  color=$RED ;;
+    esac
+
+    printf "${color}%s${NC}" "$code"
+}
+
 # --- Web Sites ---
 DOMAINS_FILE=$(mktemp)
 CLEAN_DOMAINS_FILE=$(mktemp)
@@ -25,54 +43,25 @@ grep -vE "^$|localhost|_" "$DOMAINS_FILE" | sort | uniq > "$CLEAN_DOMAINS_FILE"
 if [ -s "$CLEAN_DOMAINS_FILE" ]; then
     case "$ENABLE_HOST_SERVICES" in
         "short" | "s")
-             printf "  ${LBLUE}Websites: ${NC} "
-             while read -r domain; do
+            printf "  ${LBLUE}Websites: ${NC} "
+            while read -r domain; do
                 domain=$(echo "$domain" | xargs)
-                H1_TXT=$(curl -s -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" "https://$domain")
-                case "$H1_TXT" in
-                    2*) H1_COL=$GREEN ;;
-                    3*) H1_COL=$LYELLOW ;;
-                    4*) H1_COL=$ORANGE ;;
-                    *)  H1_COL=$RED ;;
-                esac
-                printf "%s ${H1_COL}(%s)${NC} " "$domain" "$H1_TXT"
-             done < "$CLEAN_DOMAINS_FILE"
-             printf "\n"
+                status_https=$(get_http_status "https://$domain" "$domain")
+                printf "%s (%b) " "$domain" "$status_https"
+            done < "$CLEAN_DOMAINS_FILE"
+            printf "\n"
             ;;
         *)
             printf "\n${LBLUE} Websites: ${NC}\n"
             printf " ${BG_BLUE}| %-30s | %-5s | %-5s |${NC}\n" "Active Domains:" "HTTP" "HTTPS"
 
             while read -r domain; do
-                # Clean whitespace
                 domain=$(echo "$domain" | xargs)
-            
-                # Check HTTP
-                H1_TXT=$(curl -s -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" "http://$domain")
-
-                case "$H1_TXT" in
-                    2*) H1_COL=$GREEN ;;
-                    3*) H1_COL=$LYELLOW ;;
-                    4*) H1_COL=$ORANGE ;;
-                    *)  H1_COL=$RED ;;
-                esac
-
-                # Check HTTPS
-                H2_TXT=$(curl -s -k -I -m 0.5 -o /dev/null -w "%{http_code}" -H "Host: $domain" "https://$domain")
-
-                case "$H2_TXT" in
-                    2*) H2_COL=$GREEN ;;
-                    3*) H2_COL=$LYELLOW ;;
-                    4*) H2_COL=$ORANGE ;;
-                    *)  H2_COL=$RED ;;
-                esac
+                status_http=$(get_http_status "http://$domain" "$domain")
+                status_https=$(get_http_status "https://$domain" "$domain")
 
                 # Print row
-                # We put the color codes INSIDE the format string so they wrap the padded text.
-                # %-9s ensures the text "OK" (2 chars) takes up 9 spaces visually.
-                # The color codes are invisible and don't mess up alignment this way.
-                printf " | %-30s | ${H1_COL}%-5s${NC} | ${H2_COL}%-5s${NC} |\n" "$domain" "$H1_TXT" "$H2_TXT"
-            
+                printf " | %-30s | %-5b | %-5b |\n" "$domain" "$status_http" "$status_https"
             done < "$CLEAN_DOMAINS_FILE"
             ;;
     esac
