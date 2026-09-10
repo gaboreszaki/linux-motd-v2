@@ -1,58 +1,57 @@
 #!/bin/bash
-set -euo pipefail
 
 configure_motd() {
-    local source_dir="${1:-"./motd-files"}"
-    local motd_dir="${2:-"/etc/update-motd.d"}"
-    local motd_conf="$source_dir/motd.conf"
+    local SOURCE_DIR="$1"
+    local MOTD_DIR="$2"
+    local MOTD_CONF="$SOURCE_DIR/motd.conf"
 
     ask_option() {
         local prompt="$1"
         local config_var="$2"
         local default="$3"
-        local choice
 
         # Prepare colored prompt
         local prompt_text
-        prompt_text=$(printf "${LBLUE}%s${NC} ${LBLACK}(y/n/s/t)${NC} [${WHITE}%s${NC}]: " "$prompt" "$default")
+        prompt_text=$(echo -e "${LBLUE}$prompt${NC} ${LBLACK}(y/n/s/t)${NC} [${WHITE}$default${NC}]:")
 
         while true; do
-            read -r -p "$prompt_text" choice
-            case "${choice:-$default}" in
-                [Yy]* ) printf "%s=\"y\"\n" "$config_var" >> "$motd_conf"; break;;
-                [Nn]* ) printf "%s=\"n\"\n" "$config_var" >> "$motd_conf"; break;;
-                [Ss]* ) printf "%s=\"short\"\n" "$config_var" >> "$motd_conf"; break;;
-                [Tt]* ) printf "%s=\"table\"\n" "$config_var" >> "$motd_conf"; break;;
-                * ) log_error "Please answer yes, no, short, or table.";;
+            read -p "$prompt_text" choice
+            case $choice in
+                [Yy]* ) echo "$config_var=\"y\"" >> "$MOTD_CONF"; break;;
+                [Nn]* ) echo "$config_var=\"n\"" >> "$MOTD_CONF"; break;;
+                [Ss]* ) echo "$config_var=\"short\"" >> "$MOTD_CONF"; break;;
+                [Tt]* ) echo "$config_var=\"table\"" >> "$MOTD_CONF"; break;;
+                "" ) echo "$config_var=\"$default\"" >> "$MOTD_CONF"; break;;
+                * ) echo -e "${RED}Please answer yes, no, short, or table.${NC}";;
             esac
         done
     }
 
     draw_line
-    log_info "Configuration"
+    echo -e "${LCYAN}Configuration:${NC}"
     draw_line
 
     # Try to import config from current installation if local is missing
-    if [[ ! -f "$motd_conf" ]] && [[ -f "$motd_dir/motd.conf" ]]; then
-        cp "$motd_dir/motd.conf" "$motd_conf"
-        log_success "Imported existing configuration from $motd_dir."
+    if [ ! -f "$MOTD_CONF" ] && [ -f "$MOTD_DIR/motd.conf" ]; then
+        cp "$MOTD_DIR/motd.conf" "$MOTD_CONF"
+        echo -e "${LGREEN}Imported existing configuration from $MOTD_DIR.${NC}"
     fi
 
-    local do_configure=true
-    if [[ -f "$motd_conf" ]]; then
-        local yn
-        printf "${LYELLOW}Configuration file found. Reconfigure? (y/n) [n]: ${NC}"
-        read -r yn
-        case "$yn" in
-            [Yy]* ) do_configure=true ;;
-            * ) do_configure=false ;;
+    local DO_CONFIGURE=true
+    if [ -f "$MOTD_CONF" ]; then
+        local reconf_prompt
+        reconf_prompt=$(echo -e "${LYELLOW}Configuration file found. Reconfigure? (y/n) [n]: ${NC}")
+        read -p "$reconf_prompt" yn
+        case $yn in
+            [Yy]* ) DO_CONFIGURE=true ;;
+            * ) DO_CONFIGURE=false ;;
         esac
     fi
 
-    if [[ "$do_configure" = true ]]; then
+    if [ "$DO_CONFIGURE" = true ]; then
         # Initialize config file
-        mkdir -p "$source_dir"
-        printf "# Linux MOTD Config\n" > "$motd_conf"
+        mkdir -p "$SOURCE_DIR"
+        echo "# Linux MOTD Config" > "$MOTD_CONF"
 
         ask_option "Enable Header (Logo)?" "ENABLE_HEADER" "y"
         ask_option "Enable System Info?" "ENABLE_SYSINFO" "y"
@@ -62,9 +61,9 @@ configure_motd() {
         ask_option "Enable Fail2Ban Protection?" "ENABLE_FAIL2BAN" "y"
         ask_option "Enable Updates & Maintenance?" "ENABLE_UPDATES" "y"
 
-        log_success "Configuration saved."
+        echo -e "${GREEN}Configuration saved.${NC}"
     else
-        log_info "Skipping configuration steps. Using existing motd.conf."
+        echo -e "${CYAN}Skipping configuration steps. Using existing motd.conf.${NC}"
     fi
-    draw_line
+    echo -e "${LCYAN}------------------------------------------------${NC}"
 }

@@ -1,25 +1,7 @@
-#!/bin/bash
+#!/bin/sh
 . /etc/update-motd.d/helper.sh
 
-[[ "$ENABLE_HOST_SERVICES" == "n" ]] && exit 0
-
-get_http_status() {
-    local url=$1
-    local domain=$2
-    local code
-    local color
-
-    # Check status using --connect-to localhost
-    code=$(curl -s -k -I -m 0.5 -o /dev/null -w "%{http_code}" --connect-to "$domain:80:127.0.0.1:80" --connect-to "$domain:443:127.0.0.1:443" "$url")
-
-    case "$code" in
-        2*) color=$GREEN ;;
-        3*) color=$LYELLOW ;;
-        *)  color=$RED ;;
-    esac
-
-    printf "${color}%s${NC}" "$code"
-}
+if [ "$ENABLE_HOST_SERVICES" = "n" ]; then exit 0; fi
 
 get_http_status() {
     local url=$1
@@ -44,23 +26,24 @@ DOMAINS_FILE=$(mktemp)
 CLEAN_DOMAINS_FILE=$(mktemp)
 
 # 1. Apache: Look for ServerName
-if [[ -d /etc/apache2/sites-enabled ]]; then
+if [ -d /etc/apache2/sites-enabled ]; then
     awk '/ServerName/ {print $2}' /etc/apache2/sites-enabled/* 2>/dev/null >> "$DOMAINS_FILE"
 fi
 
 # 2. Nginx: Look for server_name
-if [[ -d /etc/nginx/sites-enabled ]]; then
+if [ -d /etc/nginx/sites-enabled ]; then
     grep -h "server_name" /etc/nginx/sites-enabled/* 2>/dev/null | sed 's/server_name//;s/;//g' | tr ' ' '\n' >> "$DOMAINS_FILE"
 fi
 
 # 3. Clean, Sort and Unique
+# Filter out empty lines, 'localhost', and nginx default '_'
 grep -vE "^$|localhost|_" "$DOMAINS_FILE" | sort | uniq > "$CLEAN_DOMAINS_FILE"
 
 # Check if we have active domains to list
-if [[ -s "$CLEAN_DOMAINS_FILE" ]]; then
+if [ -s "$CLEAN_DOMAINS_FILE" ]; then
     case "$ENABLE_HOST_SERVICES" in
         "short" | "s")
-            printf "  ${LBLUE}Websites:${NC} "
+            printf "  ${LBLUE}Websites: ${NC} "
             while read -r domain; do
                 domain=$(echo "$domain" | xargs)
                 status_https=$(get_http_status "https://$domain" "$domain")
@@ -68,30 +51,24 @@ if [[ -s "$CLEAN_DOMAINS_FILE" ]]; then
             done < "$CLEAN_DOMAINS_FILE"
             printf "\n"
             ;;
-        "table" | "t")
-            print_header "Websites"
-            print_table_header "Active Domains" "HTTP" "HTTPS"
-            while read -r domain; do
-                domain=$(echo "$domain" | xargs)
-                status_http=$(get_http_status "http://$domain" "$domain")
-                status_https=$(get_http_status "https://$domain" "$domain")
-                print_table_row "$domain" "$status_http" "$status_https"
-            done < "$CLEAN_DOMAINS_FILE"
-            ;;
         *)
-            print_header "Websites"
+            printf "\n${LBLUE} Websites: ${NC}\n"
+            printf " ${BG_BLUE}| %-30s | %-5s | %-5s |${NC}\n" "Active Domains:" "HTTP" "HTTPS"
+
             while read -r domain; do
                 domain=$(echo "$domain" | xargs)
                 status_http=$(get_http_status "http://$domain" "$domain")
                 status_https=$(get_http_status "https://$domain" "$domain")
-                print_normal_row "$domain:" "HTTP: $status_http | HTTPS: $status_https"
+
+                # Print row
+                printf " | %-30s | %-5b | %-5b |\n" "$domain" "$status_http" "$status_https"
             done < "$CLEAN_DOMAINS_FILE"
             ;;
     esac
 else
-    if [[ "$ENABLE_HOST_SERVICES" != "short" && "$ENABLE_HOST_SERVICES" != "s" ]]; then
-        print_header "HOST & WEB SERVICES"
-        print_normal_row "Active Sites:" "(No active domains found)" "$LBLACK"
+    if [ "$ENABLE_HOST_SERVICES" != "short" ] && [ "$ENABLE_HOST_SERVICES" != "s" ]; then
+        printf "\n${LBLUE} HOST & WEB SERVICES ${NC}\n"
+        printf "  %-20s ${LBLACK}(No active domains found)${NC}\n" "Active Sites:"
     fi
 fi
 

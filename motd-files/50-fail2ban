@@ -1,46 +1,46 @@
-#!/bin/bash
+#!/bin/sh
 . /etc/update-motd.d/helper.sh
 
-[[ "$ENABLE_FAIL2BAN" == "n" ]] && exit 0
+if [ "$ENABLE_FAIL2BAN" = "n" ]; then exit 0; fi
 
 # Check if fail2ban-client is installed
 if command -v fail2ban-client >/dev/null 2>&1; then
     # Needs root privileges to communicate with the socket
-    if [[ "$EUID" -eq 0 ]]; then
+    if [ "$(id -u)" -eq 0 ]; then
         # Get Jail List
-        JAIL_LIST=$(fail2ban-client status | awk '/Jail list:/ { $1=$2=""; print $0 }' | tr ',' ' ')
+        JAIL_LIST=$(fail2ban-client status | grep "Jail list:" | sed 's/.*Jail list://g' | tr ',' ' ')
         
         TOTAL_BANS=0
         JAIL_COUNT=0
         
         # Iterate over jails to sum up bans
         for jail in $JAIL_LIST; do
-            COUNT=$(fail2ban-client status "$jail" | awk '/Currently banned:/ { print $4 }')
+            COUNT=$(fail2ban-client status "$jail" | grep "Currently banned:" | awk '{print $4}')
             TOTAL_BANS=$((TOTAL_BANS + COUNT))
             JAIL_COUNT=$((JAIL_COUNT + 1))
         done
         
         # Color logic for bans
         COLOR=$GREEN
-        [[ "$TOTAL_BANS" -gt 30 ]] && COLOR=$YELLOW
-        [[ "$TOTAL_BANS" -gt 100 ]] && COLOR=$RED
+        [ "$TOTAL_BANS" -gt 30 ] && COLOR=$YELLOW
+        [ "$TOTAL_BANS" -gt 100 ] && COLOR=$RED
 
         case "$ENABLE_FAIL2BAN" in
             "short" | "s")
                 printf "  ${LBLUE}F2B:${NC} ${LWHITE}%s${NC} jails, ${COLOR}%s${NC} bans\n" "$JAIL_COUNT" "$TOTAL_BANS"
                 ;;
             "table" | "t")
-                print_header "Fail2Ban"
-                print_table_header "Active Jails" "Ban count"
-                print_table_row "$JAIL_COUNT" "${COLOR}${TOTAL_BANS}${NC}"
+                printf "\n${LBLUE} Fail2Ban: ${NC}\n"
+                printf " ${BG_BLUE}| %-15s | %-15s |${NC} \n" "Active Jails:" "Ban count:"
+                printf " | %-15s | ${COLOR}%-15s${NC} | \n" "$JAIL_COUNT" "$TOTAL_BANS"
                 ;;
             *)
-                print_header "Fail2Ban"
-                print_normal_row "Active Jails:" "$JAIL_COUNT"
-                print_normal_row "Ban count:" "$TOTAL_BANS IPs" "$COLOR"
+                printf "\n${LBLUE} Fail2Ban: ${NC}\n"
+                printf "  %-20s %s\n" "Active Jails:" "$JAIL_COUNT"
+                printf "  %-20s ${COLOR}%s IPs${NC}\n" "Ban count:" "$TOTAL_BANS"
                 ;;
         esac
     else
-        print_normal_row "Fail2Ban:" "(Needs root to read status)" "$YELLOW"
+        printf "  ${YELLOW}Insufficient permissions to read Fail2Ban status (needs root).${NC}\n"
     fi
 fi

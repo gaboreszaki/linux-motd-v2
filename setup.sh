@@ -1,73 +1,60 @@
 #!/bin/bash
-set -euo pipefail
 
 # Configuration
 MOTD_DIR="/etc/update-motd.d"
 BACKUP_DIR="/etc/update-motd.d.bak"
 SOURCE_DIR="./motd-files"
 
-# Load Common Scripts
-# shellcheck source=./common.sh
-source ./common.sh
 
+# Load Common Scripts
+source ./common.sh
 draw_line
-log_info "Starting Installation"
+echo -e "${LCYAN}Starting Installation${NC}"
 draw_line
 
 validate_root_privileges
-
-# Verify dependencies
-check_dependencies "mkdir" "cp" "rm" "chmod"
-
 get_config_script
 
-log_info "Backup:"
+
+echo -e "${CYAN}Backup:${NC}"
 # 1. Create Backup of existing files
-if [[ -d "$MOTD_DIR" ]]; then
+if [ -d "$MOTD_DIR" ]; then
     # Check if backup already exists to prevent overwriting the original backup with our own files on re-runs
-    if [[ ! -d "$BACKUP_DIR" ]]; then
-        log_success "Backing up original files to: $BACKUP_DIR..."
+    if [ ! -d "$BACKUP_DIR" ]; then
+        echo -e "${LGREEN}Backing up original files to:${NC} $BACKUP_DIR..."
         mkdir -p "$BACKUP_DIR"
-        # Use find to copy files to avoid globbing issues if directory is empty
-        find "$MOTD_DIR" -maxdepth 1 -type f -exec cp -t "$BACKUP_DIR" {} + 2>/dev/null || :
+        cp -r "$MOTD_DIR/"* "$BACKUP_DIR/" 2>/dev/null || :
     else
-        log_info "Backup directory $BACKUP_DIR already exists. Skipping backup to preserve original files."
+        echo -e "${CYAN}Backup directory $BACKUP_DIR already exists. Skipping backup to preserve original files.${NC}"
     fi
 else
     mkdir -p "$MOTD_DIR"
 fi
 
 # 2. Clean target directory
-log_info "Cleaning target directory $MOTD_DIR..."
-# Safety check to avoid rm -rf /
-if [[ "$MOTD_DIR" == "/etc/update-motd.d" ]]; then
-    rm -rf "${MOTD_DIR:?}"/*
-fi
+echo -e "${LGREEN}Cleaning target directory $MOTD_DIR...${NC}"
+rm -rf "${MOTD_DIR:?}/"*
 
 # 3. Copy new files
-if [[ -d "$SOURCE_DIR" ]]; then
-    log_info "Copying new MOTD files..."
+if [ -d "$SOURCE_DIR" ]; then
+    echo -e "${LGREEN}Copying new MOTD files...${NC}"
     cp -r "$SOURCE_DIR/"* "$MOTD_DIR/"
 else
-    log_error "Source directory $SOURCE_DIR not found!"
+    echo -e "${RED}Error: Source directory $SOURCE_DIR not found!${NC}"
     exit 1
 fi
 
 # 4. Set permissions
-log_info "Setting permissions..."
+echo -e "${LGREEN}Setting permissions...${NC}"
 chmod +x "$MOTD_DIR"/*
-
 # Remove execute permission from non-script files if they exist
-for file in "logo-default.txt" "logo-custom.txt" "motd.conf"; do
-    [[ -f "$MOTD_DIR/$file" ]] && chmod -x "$MOTD_DIR/$file"
-done
-
-# Helper might be sourced or executed, ensure it is executable
-[[ -f "$MOTD_DIR/helper.sh" ]] && chmod +x "$MOTD_DIR/helper.sh"
+[ -f "$MOTD_DIR/logo-default.txt" ] && chmod -x "$MOTD_DIR/logo-default.txt"
+[ -f "$MOTD_DIR/logo-custom.txt" ] && chmod -x "$MOTD_DIR/logo-custom.txt"
+[ -f "$MOTD_DIR/helper.sh" ] && chmod +x "$MOTD_DIR/helper.sh" # Helper might be sourced or executed
 
 draw_line
 display_notes
 draw_line
 
-log_success "Installation complete!"
+echo -e "${LGREEN}Installation complete!${NC} \n"
 
