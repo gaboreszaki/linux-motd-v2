@@ -21,6 +21,24 @@ get_http_status() {
     printf "${color}%s${NC}" "$code"
 }
 
+get_http_status() {
+    local url=$1
+    local domain=$2
+    local code
+
+    # Check status using --connect-to localhost
+    code=$(curl -s -k -I -m 0.5 -o /dev/null -w "%{http_code}" --connect-to "$domain:80:127.0.0.1:80" --connect-to "$domain:443:127.0.0.1:443" "$url")
+
+    case "$code" in
+        2*) color=$GREEN ;;
+        3*) color=$LYELLOW ;;
+        4*) color=$ORANGE ;;
+        *)  color=$RED ;;
+    esac
+
+    printf "${color}%s${NC}" "$code"
+}
+
 # --- Web Sites ---
 DOMAINS_FILE=$(mktemp)
 CLEAN_DOMAINS_FILE=$(mktemp)
