@@ -1,40 +1,42 @@
 #!/bin/bash
+set -euo pipefail
 
 # Configuration
 MOTD_DIR="/etc/update-motd.d"
 BACKUP_DIR="/etc/update-motd.d.bak"
 
 # Load Common Scripts
+# shellcheck source=./common.sh
 source ./common.sh
 
 draw_line
-echo -e "${LCYAN}Uninstalling Linux MOTD...${NC}"
+log_info "Uninstalling Linux MOTD..."
 draw_line
 
 validate_root_privileges
-get_config_script
 
 # 1. Remove current files
-echo -e "${LGREEN}Removing installed files from $MOTD_DIR...${NC}"
-rm -rf "${MOTD_DIR:?}/"*
+log_info "Removing installed files from $MOTD_DIR..."
+if [[ "$MOTD_DIR" == "/etc/update-motd.d" ]]; then
+    rm -rf "${MOTD_DIR:?}"/*
+fi
 
 # 2. Restore backup
-if [ -d "$BACKUP_DIR" ]; then
-    echo -e "${LGREEN}Restoring original files from $BACKUP_DIR...${NC}"
-    if [ "$(ls -A $BACKUP_DIR)" ]; then
+if [[ -d "$BACKUP_DIR" ]]; then
+    log_info "Restoring original files from $BACKUP_DIR..."
+    # Check if backup directory is not empty
+    if [[ -n "$(ls -A "$BACKUP_DIR")" ]]; then
         cp -r "$BACKUP_DIR/"* "$MOTD_DIR/"
         chmod +x "$MOTD_DIR"/*
-        echo -e "${GREEN}Backup restored successfully.${NC}"
+        log_success "Backup restored successfully."
     else
-        echo -e "${RED}Warning: Backup directory exists but is empty.${NC}"
+        log_warn "Backup directory exists but is empty."
     fi
     
-    # Optional: Remove backup directory after restore?
-    # rm -rf "$BACKUP_DIR"
-    echo -e "${CYAN}Note:${NC} Backup folder $BACKUP_DIR was kept."
+    log_info "Backup folder $BACKUP_DIR was kept for safety."
 else
-    echo -e "${RED}Warning: No backup directory found at $BACKUP_DIR. Directory $MOTD_DIR is now empty.${NC}"
+    log_warn "No backup directory found at $BACKUP_DIR. Directory $MOTD_DIR is now empty."
 fi
 
 draw_line
-echo -e "${GREEN}Uninstallation complete.${NC}\n"
+log_success "Uninstallation complete."
